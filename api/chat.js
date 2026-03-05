@@ -1,37 +1,51 @@
 export default async function handler(req, res) {
-  // 1. Solo permitimos peticiones POST
+  // 1. Verificamos que sea una petición POST
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  // 2. Usamos la nueva variable de entorno de Google
+  // 2. Cargamos la API Key (Asegúrate de que se llame así en Vercel)
   const apiKey = process.env.GOOGLE_GENERATION_AI_API_KEY;
   
   if (!apiKey) {
-    return res.status(500).json({ error: 'API key de Google no configurada en Vercel' });
+    return res.status(500).json({ 
+      error: 'Configuración incompleta', 
+      message: 'Falta la variable GOOGLE_GENERATION_AI_API_KEY en Vercel.' 
+    });
   }
 
   try {
-    // 3. Configuración de Gemini 3.0 Flash
+    // 3. Configuración del modelo y URL (Gemini 3 Flash)
     const MODEL = "gemini-3-flash-preview"; 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
 
-    // Extraemos el mensaje que viene de tu página web
-    // (Asumimos que tu frontend envía { messages: [ { content: "..." } ] })
-    const lastMessage = req.body.messages?.[req.body.messages.length - 1]?.content || "Hola";
+    // Extraemos el mensaje del alumno
+    const messages = req.body.messages || [];
+    const lastUserMessage = messages[messages.length - 1]?.content || "Hola";
 
+    // 4. Cuerpo de la petición con instrucciones de "Tutor Socrático"
     const geminiBody = {
       system_instruction: {
         parts: [{ 
-          text: "Eres un tutor de física experto y amable. Usa LaTeX para fórmulas y explica paso a paso sin dar la respuesta de inmediato." 
+          text: `Eres un tutor de física socrático y breve. 
+           Tus reglas:
+           - NUNCA des la respuesta final.
+           - Respuestas de máximo 2 o 3 oraciones.
+           - Si el alumno acierta, confíma brevemente y pregunta: "¿Cuál es el siguiente paso?" o "¿Cómo aplicarías esto al problema?".
+           - Usa LaTeX para fórmulas: $E = m \\cdot c^2$.` 
         }]
       },
       contents: [{
-        parts: [{ text: lastMessage }]
-      }]
+        role: "user",
+        parts: [{ text: lastUserMessage }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 200, // Limita físicamente la longitud de la respuesta
+      }
     };
 
-    // 4. Llamada a la API de Google
+    // 5. Llamada a la API
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -41,30 +55,28 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: "Error desde Google API", details: data });
+      console.error("Error de Google:", data);
+      return res.status(response.status).json({ error: "Error en Gemini API", details: data });
     }
 
-    // 5. TRUCO FINAL: "Disfrazamos" la respuesta de Gemini como si fuera de Claude
-    // para que tu frontend actual la entienda sin errores.
-    const botText = data.candidates[0].content.parts[0].text;
+    // 6. Extracción del texto de la respuesta
+    const botResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar una respuesta.";
 
+    // 7. Formato de salida compatible con tu frontend de Claude
     return res.status(200).json({
-      id: "msg_" + Math.random().toString(36).substring(7),
+      id: Date.now().toString(),
       type: "message",
       role: "assistant",
-      model: MODEL,
       content: [
         {
           type: "text",
-          text: botText
+          text: botResponseText
         }
-      ],
-      stop_reason: "end_turn",
-      stop_sequence: null
+      ]
     });
 
   } catch (error) {
     console.error("Error en el servidor:", error);
-    return res.status(500).json({ error: "Error interno", message: error.message });
+    return res.status(500).json({ error: "Error interno del servidor", message: error.message });
   }
 }
