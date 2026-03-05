@@ -2,10 +2,5 @@
   "rewrites": [
     { "source": "/api/chat", "destination": "/api/chat.js" },
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/chat.js": {
-      "runtime": "edge"
-    }
-  }
+  ]
 }
