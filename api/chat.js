@@ -64,8 +64,8 @@ CONVERSIONES QUE CONOCÉS: 1 km = 1000 m, 1 h = 3600 s, 1 min = 60 s, 1 ms = 0.0
       },
       contents,
       generationConfig: {
-        temperature: 0.5,
-        maxOutputTokens: 180,
+        temperature: 0.7,
+        maxOutputTokens: 300,
       }
     };
 
