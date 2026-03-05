@@ -1483,9 +1483,7 @@ async function sendChatMessage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: buildSystemPrompt(currentEx),
+        exerciseContext: buildSystemPrompt(currentEx),
         messages: chatHistory
       })
     });
@@ -1498,7 +1496,7 @@ async function sendChatMessage() {
     addBotMsg(reply);
   } catch(err) {
     hideTyping();
-    addBotMsg('Tuve un problema de conexión 😅 Intentá de nuevo en un momento.');
+    addBotMsg('Tuve un problema de conexión. Intentá de nuevo en un momento.');
   }
 
   chatWaiting = false;
