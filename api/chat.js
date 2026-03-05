@@ -1,51 +1,56 @@
 export default async function handler(req, res) {
-  // 1. Verificamos que sea una petición POST
+  // 1. Solo POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  // 2. Cargamos la API Key (Asegúrate de que se llame así en Vercel)
+  // 2. API Key
   const apiKey = process.env.GOOGLE_GENERATION_AI_API_KEY;
-  
   if (!apiKey) {
-    return res.status(500).json({ 
-      error: 'Configuración incompleta', 
-      message: 'Falta la variable GOOGLE_GENERATION_AI_API_KEY en Vercel.' 
+    return res.status(500).json({
+      error: 'Configuración incompleta',
+      message: 'Falta la variable GOOGLE_GENERATION_AI_API_KEY en Vercel.'
     });
   }
 
   try {
-    // 3. Configuración del modelo y URL (Gemini 3 Flash)
-    const MODEL = "gemini-3-flash-preview"; 
+    // 3. Modelo y URL — gemini-2.0-flash es estable y rápido
+    const MODEL = "gemini-2.0-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
 
-    // Extraemos el mensaje del alumno
+    // 4. Historial completo desde el frontend
     const messages = req.body.messages || [];
-    const lastUserMessage = messages[messages.length - 1]?.content || "Hola";
 
-    // 4. Cuerpo de la petición con instrucciones de "Tutor Socrático"
+    // Gemini usa "model" en vez de "assistant"
+    const contents = messages.map(m => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }]
+    }));
+
+    // 5. Cuerpo con system prompt + historial completo
     const geminiBody = {
       system_instruction: {
-        parts: [{ 
-          text: `Eres un tutor de física socrático y breve. 
-           Tus reglas:
-           - NUNCA des la respuesta final.
-           - Respuestas de máximo 2 o 3 oraciones.
-           - Si el alumno acierta, confíma brevemente y pregunta: "¿Cuál es el siguiente paso?" o "¿Cómo aplicarías esto al problema?".
-           - Usa LaTeX para fórmulas: $E = m \\cdot c^2$.` 
+        parts: [{
+          text: `Eres un tutor de física socrático. Responde SIEMPRE en español.
+
+REGLAS ESTRICTAS que debes seguir en cada respuesta:
+- NUNCA des la respuesta final directamente.
+- Máximo 2 o 3 oraciones por respuesta.
+- Guiá al alumno con preguntas simples como: "¿Cuántos gramos hay en 1 kg?" o "¿Cuál sería el siguiente paso?".
+- Si el alumno acierta, confirmá brevemente con una sola oración y preguntá el siguiente paso.
+- Si el alumno está equivocado, no lo digas directamente: hacé una pregunta que lo lleve a descubrirlo.
+- Usá texto plano, SIN asteriscos, SIN markdown, SIN caracteres especiales ni chinos.
+- Para fórmulas usá texto simple, por ejemplo: F = m * a, o bien 1 kg = 1000 g.`
         }]
       },
-      contents: [{
-        role: "user",
-        parts: [{ text: lastUserMessage }]
-      }],
+      contents,
       generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 200, // Limita físicamente la longitud de la respuesta
+        temperature: 0.5,
+        maxOutputTokens: 150,
       }
     };
 
-    // 5. Llamada a la API
+    // 6. Llamada a la API
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -59,10 +64,18 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: "Error en Gemini API", details: data });
     }
 
-    // 6. Extracción del texto de la respuesta
-    const botResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar una respuesta.";
+    // 7. Extraer texto y limpiar cualquier markdown residual
+    let botText = data.candidates?.[0]?.content?.parts?.[0]?.text
+      || "No pude generar una respuesta.";
 
-    // 7. Formato de salida compatible con tu frontend de Claude
+    botText = botText
+      .replace(/\*\*(.*?)\*\*/g, '$1')  // quitar negrita **texto**
+      .replace(/\*(.*?)\*/g, '$1')       // quitar cursiva *texto*
+      .replace(/`(.*?)`/g, '$1')         // quitar código `texto`
+      .replace(/#{1,6}\s/g, '')          // quitar encabezados ## texto
+      .trim();
+
+    // 8. Respuesta compatible con el frontend
     return res.status(200).json({
       id: Date.now().toString(),
       type: "message",
@@ -70,7 +83,7 @@ export default async function handler(req, res) {
       content: [
         {
           type: "text",
-          text: botResponseText
+          text: botText
         }
       ]
     });
