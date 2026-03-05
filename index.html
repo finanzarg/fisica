@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FísicaLab · Semana 1 · Magnitudes y Unidades</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg2: #ede8dd;
+  --ink: #1a1612;
+  --ink2: #4a4540;
+  --ink3: #8a8480;
+  --accent: #d4400a;
+  --accent2: #2563a8;
+  --accent3: #16803c;
+  --accent-light: rgba(212,64,10,0.1);
+  --border: #d0c8bc;
+  --card: #faf7f2;
+  --card2: #f0ebe0;
+  --white: #fffdf9;
+  --shadow: 0 2px 12px rgba(26,22,18,0.08);
+  --shadow-lg: 0 8px 32px rgba(26,22,18,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Instrument Serif', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 60px;
+}
+
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  margin-right: 40px;
+  white-space: nowrap;
+}
+
+.nav-logo span { color: var(--ink); }
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-tab {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.nav-tab:hover { color: var(--ink); background: var(--bg2); }
+
+.nav-tab.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.nav-week {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink3);
+  background: var(--card2);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-left: auto;
+}
+
+/* ── SECTIONS ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 32px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+  font-family: 'Instrument Serif', serif;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--ink2);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn-primary {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 12px 28px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.btn-primary:hover { background: #b83508; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,64,10,0.3); }
+
+.btn-secondary {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 12px 28px;
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.btn-secondary:hover { background: var(--ink); color: var(--bg); transform: translateY(-1px); }
+
+.hero-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-card-stack {
+  position: relative;
+  width: 320px;
+  height: 280px;
+}
+
+.hcard {
+  position: absolute;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+.hcard-1 {
+  width: 280px;
+  top: 0; left: 20px;
+  transform: rotate(-4deg);
+  background: #fff8f0;
+  border-color: #e8d5c0;
+}
+
+.hcard-2 {
+  width: 280px;
+  top: 60px; left: 0;
+  transform: rotate(2deg);
+  z-index: 2;
+}
+
+.hcard-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.hcard-formula {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.hcard-sub {
+  font-size: 0.85rem;
+  color: var(--ink3);
+  font-style: italic;
+}
+
+.hcard-eq {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  background: var(--accent-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.hcard-eq span {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ── CONTENT ── */
+.content-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+/* Progress bar */
+.progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  padding-top: 8px;
+}
+
+.progress-steps {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.p-step {
+  height: 4px;
+  flex: 1;
+  background: var(--border);
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+
+.p-step.done { background: var(--accent); }
+
+.progress-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink3);
+  white-space: nowrap;
+}
+
+/* Theory section */
+.teoria-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.teoria-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.teoria-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+.teoria-card.full { grid-column: 1 / -1; }
+
+.t-icon {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.t-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.t-body {
+  font-size: 0.9rem;
+  color: var(--ink2);
+  line-height: 1.7;
+}
+
+.t-body strong { color: var(--ink); font-style: italic; }
+
+/* SI Table */
+.si-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 16px;
+}
+
+.si-table th {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink3);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+
+.si-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink2);
+}
+
+.si-table tr:last-child td { border-bottom: none; }
+
+.si-table .unit-sym {
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+}
+
+/* Prefixes table */
+.prefix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.prefix-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.prefix-sym {
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent2);
+  display: block;
+}
+
+.prefix-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin: 2px 0;
+}
+
+.prefix-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  display: block;
+}
+
+/* Conversión visual */
+.conversion-visual {
+  background: var(--ink);
+  border-radius: 14px;
+  padding: 24px;
+  margin-top: 20px;
+  color: var(--bg);
+}
+
+.cv-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.cv-formula {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+  color: #f0b429;
+}
+
+.cv-example {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: #ccc;
+  line-height: 2;
+  text-align: center;
+}
+
+.cv-example .hl { color: #3ecf8e; }
+.cv-example .cancel { text-decoration: line-through; color: #888; }
+
+/* Cheatsheet pills */
+.cheat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cheat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.cheat-arrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+
+.cheat-rule {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--ink2);
+}
+
+/* ── EJERCICIOS ── */
+#section-ejercicios {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+.ejercicios-header {
+  margin-bottom: 32px;
+}
+
+.ejercicios-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.ejercicios-header p {
+  color: var(--ink2);
+  font-size: 0.95rem;
+}
+
+.ex-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.ex-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.ex-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--border);
+  transition: background 0.2s;
+}
+
+.ex-card.easy::before { background: var(--accent3); }
+.ex-card.medium::before { background: var(--accent2); }
+.ex-card.hard::before { background: var(--accent); }
+
+.ex-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--ink); }
+
+.ex-card-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.ex-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.ex-card-sub {
+  font-size: 0.8rem;
+  color: var(--ink3);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.ex-card-diff {
+  margin-top: 14px;
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ex-card.easy .ex-card-diff { background: rgba(22,128,60,0.12); color: var(--accent3); }
+.ex-card.medium .ex-card-diff { background: rgba(37,99,168,0.12); color: var(--accent2); }
+.ex-card.hard .ex-card-diff { background: rgba(212,64,10,0.12); color: var(--accent); }
+
+/* Chat modal */
+.chat-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,22,18,0.6);
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+}
+
+.chat-overlay.open { display: flex; }
+
+.chat-modal {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 24px 24px 16px 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 48px rgba(26,22,18,0.2);
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.chat-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.bot-avatar {
+  width: 42px;
+  height: 42px;
+  background: var(--ink);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.chat-modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chat-modal-ex {
+  font-size: 0.82rem;
+  color: var(--ink3);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.chat-close {
+  margin-left: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--ink3);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.chat-close:hover { background: var(--border); color: var(--ink); }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.msg { display: flex; gap: 10px; animation: msgIn 0.2s ease-out; }
+@keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.msg.user { flex-direction: row-reverse; }
+
+.msg-av {
+  width: 30px; height: 30px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.msg-av.bot { background: var(--ink); }
+.msg-av.user-av { background: var(--bg2); border: 1px solid var(--border); }
+
+.msg-bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.msg.bot .msg-bubble {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-top-left-radius: 4px;
+  color: var(--ink);
+}
+
+.msg.user .msg-bubble {
+  background: var(--ink);
+  color: var(--bg);
+  border-top-right-radius: 4px;
+  font-style: italic;
+}
+
+.typing-indicator {
+  display: flex; gap: 10px;
+  animation: msgIn 0.2s ease-out;
+}
+
+.typing-dots {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  border-top-left-radius: 4px;
+  padding: 14px 18px;
+  display: flex; gap: 4px; align-items: center;
+}
+
+.td { width: 5px; height: 5px; background: var(--ink3); border-radius: 50%; animation: tdBounce 1.2s infinite; }
+.td:nth-child(2) { animation-delay: 0.2s; }
+.td:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tdBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4;} 30%{transform:translateY(-4px);opacity:1;} }
+
+.chat-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  outline: none;
+  resize: none;
+  min-height: 42px;
+  max-height: 100px;
+  transition: border-color 0.2s;
+}
+
+.chat-input:focus { border-color: var(--ink); }
+.chat-input::placeholder { color: var(--ink3); font-style: italic; }
+
+.chat-send {
+  width: 42px; height: 42px;
+  background: var(--ink);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.chat-send:hover { background: var(--accent); transform: scale(1.05); }
+.chat-send:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+.chat-send svg { width: 16px; height: 16px; fill: white; }
+
+/* chat input area */
+
+/* ── JUEGO ── */
+#section-juego {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+.juego-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.juego-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.juego-header p { color: var(--ink2); font-size: 0.95rem; }
+
+/* Scoreboard */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.score-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.score-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.score-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Timer ring */
+.timer-ring-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.timer-ring {
+  position: relative;
+  width: 90px; height: 90px;
+}
+
+.timer-ring svg {
+  transform: rotate(-90deg);
+  width: 90px; height: 90px;
+}
+
+.timer-ring circle {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.timer-track { stroke: var(--border); }
+.timer-fill {
+  stroke: var(--accent);
+  stroke-dasharray: 245;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
+}
+
+.timer-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* Question card */
+.q-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+  transition: border-color 0.3s;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.q-card.correct { border-color: var(--accent3); background: #f0fff4; }
+.q-card.wrong { border-color: var(--accent); background: #fff5f5; }
+
+.q-category {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+.q-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.q-text .from {
+  color: var(--accent2);
+}
+
+.q-text .to {
+  color: var(--accent);
+}
+
+.q-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.q-opt {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 14px 16px;
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--ink);
+  text-align: center;
+}
+
+.q-opt:hover:not(:disabled) { border-color: var(--ink); background: var(--bg); transform: translateY(-1px); }
+.q-opt.correct { background: #dcfce7; border-color: var(--accent3); color: #166534; }
+.q-opt.wrong { background: #fee2e2; border-color: var(--accent); color: #991b1b; }
+.q-opt:disabled { cursor: not-allowed; }
+
+/* Feedback */
+.feedback-bar {
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+  opacity: 0;
+}
+
+.feedback-bar.show { opacity: 1; }
+.feedback-bar.correct { background: #dcfce7; color: #166534; }
+.feedback-bar.wrong { background: #fee2e2; color: #991b1b; }
+
+/* Game states */
+.game-start, .game-end {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.game-start h3, .game-end h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.game-start p, .game-end p {
+  color: var(--ink2);
+  margin-bottom: 28px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.game-end .final-score {
+  font-family: 'Syne', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  display: block;
+  margin: 16px 0;
+}
+
+.btn-game {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 14px 40px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.btn-game:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(212,64,10,0.3); }
+
+.difficulty-select {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.diff-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  padding: 8px 20px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink2);
+  transition: all 0.15s;
+}
+
+.diff-btn.selected { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+
+/* Stars */
+.stars {
+  font-size: 2rem;
+  letter-spacing: 4px;
+  margin: 12px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; gap: 32px; }
+  .hero-visual { display: none; }
+  .hero-title { font-size: 2.2rem; }
+  .teoria-grid { grid-template-columns: 1fr; }
+  .ex-grid { grid-template-columns: 1fr 1fr; }
+  .prefix-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 480px) {
+  nav { padding: 0 16px; }
+  .nav-logo { margin-right: 16px; }
+  .nav-week { display: none; }
+  .ex-grid { grid-template-columns: 1fr; }
+  .content-wrap, #section-ejercicios, #section-juego { padding-left: 16px; padding-right: 16px; }
+  .hero { padding: 40px 16px 32px; }
+  .q-options { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Física<span>Lab</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('teoria')">📖 Teoría</button>
+    <button class="nav-tab" onclick="showSection('ejercicios')">✏️ Ejercicios</button>
+    <button class="nav-tab" onclick="showSection('juego')">⚡ Juego</button>
+  </div>
+  <div class="nav-week">Semana 1 · Magnitudes y Unidades</div>
+</nav>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN TEORÍA                             -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section active" id="section-teoria">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">🔬 Laboratorio de Ciencias Naturales · 4.° año · 2026</div>
+      <h1 class="hero-title">Semana 1<br><em>Magnitudes</em><br>y Unidades</h1>
+      <p class="hero-desc">El idioma del universo tiene números y unidades. Esta semana aprendés a medir el mundo, convertir unidades y hablar el mismo idioma que los científicos de todo el planeta.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showSection('ejercicios')">Ir a ejercicios →</button>
+        <button class="btn-secondary" onclick="showSection('juego')">⚡ Jugar</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="hcard hcard-1">
+          <div class="hcard-label">Factor de conversión</div>
+          <div class="hcard-formula">90 km/h → m/s</div>
+          <div class="hcard-sub">¿Cuántos m/s son?</div>
+          <div class="hcard-eq">
+            <span>90 × 1000 ÷ 3600 = 25 m/s</span>
+          </div>
+        </div>
+        <div class="hcard hcard-2">
+          <div class="hcard-label">Magnitudes del SI</div>
+          <div class="hcard-formula">7 unidades base</div>
+          <div class="hcard-sub">metro · kilogramo · segundo · kelvin · ampere · candela · mol</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="content-wrap">
+
+    <!-- 1. Magnitudes físicas -->
+    <div class="teoria-grid">
+      <div class="teoria-card">
+        <span class="t-icon">⚖️</span>
+        <div class="t-title">¿Qué es una magnitud física?</div>
+        <div class="t-body">
+          Es toda propiedad de la naturaleza que puede <strong>medirse y expresarse con un número y una unidad</strong>. Sin unidad, el número no tiene sentido físico.<br><br>
+          Ejemplo: "La montaña rusa tiene 42 metros de altura" → número <strong>42</strong>, unidad <strong>metros</strong>.
+        </div>
+      </div>
+
+      <div class="teoria-card">
+        <span class="t-icon">🧭</span>
+        <div class="t-title">Escalares vs. Vectoriales</div>
+        <div class="t-body">
+          <strong>Escalares:</strong> solo necesitan número y unidad. Ejemplos: masa (5 kg), temperatura (20 °C), tiempo (3 s).<br><br>
+          <strong>Vectoriales:</strong> también necesitan dirección y sentido. Se representan como flechas. Ejemplos: velocidad (50 km/h hacia el norte), fuerza (10 N hacia abajo).
+        </div>
+      </div>
+
+      <!-- SI Table -->
+      <div class="teoria-card full">
+        <span class="t-icon">🌍</span>
+        <div class="t-title">Sistema Internacional de Unidades (SI)</div>
+        <div class="t-body">Acordado en 1960, es el sistema usado por científicos e ingenieros de todo el mundo. Define <strong>7 magnitudes fundamentales</strong>:</div>
+        <table class="si-table">
+          <thead>
+            <tr>
+              <th>Magnitud</th>
+              <th>Unidad SI</th>
+              <th>Símbolo</th>
+              <th>Ejemplo en el parque</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Longitud</td><td>metro</td><td><span class="unit-sym">m</span></td><td>42 m de altura del loop</td></tr>
+            <tr><td>Masa</td><td>kilogramo</td><td><span class="unit-sym">kg</span></td><td>800 kg pesa el carro</td></tr>
+            <tr><td>Tiempo</td><td>segundo</td><td><span class="unit-sym">s</span></td><td>3,2 s dura la caída</td></tr>
+            <tr><td>Temperatura</td><td>kelvin</td><td><span class="unit-sym">K</span></td><td>293 K ≈ 20 °C</td></tr>
+            <tr><td>Corriente eléctrica</td><td>ampere</td><td><span class="unit-sym">A</span></td><td>Motor del free fall</td></tr>
+            <tr><td>Intensidad luminosa</td><td>candela</td><td><span class="unit-sym">cd</span></td><td>Iluminación del parque</td></tr>
+            <tr><td>Cantidad de sustancia</td><td>mol</td><td><span class="unit-sym">mol</span></td><td>Reacciones químicas</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. Prefijos -->
+    <div class="teoria-grid">
+      <div class="teoria-card full">
+        <span class="t-icon">🔢</span>
+        <div class="t-title">Múltiplos y Submúltiplos del SI</div>
+        <div class="t-body">Prefijos para expresar cantidades muy grandes o muy pequeñas sin tener que escribir muchos ceros.</div>
+        <div class="prefix-grid">
+          <div class="prefix-item"><span class="prefix-sym">T</span><span class="prefix-name">tera</span><span class="prefix-val">10¹²</span></div>
+          <div class="prefix-item"><span class="prefix-sym">G</span><span class="prefix-name">giga</span><span class="prefix-val">10⁹</span></div>
+          <div class="prefix-item"><span class="prefix-sym">M</span><span class="prefix-name">mega</span><span class="prefix-val">10⁶</span></div>
+          <div class="prefix-item"><span class="prefix-sym">k</span><span class="prefix-name">kilo</span><span class="prefix-val">10³</span></div>
+          <div class="prefix-item"><span class="prefix-sym">h</span><span class="prefix-name">hecto</span><span class="prefix-val">10²</span></div>
+          <div class="prefix-item"><span class="prefix-sym">da</span><span class="prefix-name">deca</span><span class="prefix-val">10¹</span></div>
+          <div class="prefix-item"><span class="prefix-sym">d</span><span class="prefix-name">deci</span><span class="prefix-val">10⁻¹</span></div>
+          <div class="prefix-item"><span class="prefix-sym">c</span><span class="prefix-name">centi</span><span class="prefix-val">10⁻²</span></div>
+          <div class="prefix-item"><span class="prefix-sym">m</span><span class="prefix-name">mili</span><span class="prefix-val">10⁻³</span></div>
+          <div class="prefix-item"><span class="prefix-sym">μ</span><span class="prefix-name">micro</span><span class="prefix-val">10⁻⁶</span></div>
+          <div class="prefix-item"><span class="prefix-sym">n</span><span class="prefix-name">nano</span><span class="prefix-val">10⁻⁹</span></div>
+          <div class="prefix-item"><span class="prefix-sym">p</span><span class="prefix-name">pico</span><span class="prefix-val">10⁻¹²</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Conversión -->
+    <div class="teoria-grid">
+      <div class="teoria-card">
+        <span class="t-icon">💡</span>
+        <div class="t-title">¿Por qué funciona el factor de conversión?</div>
+        <div class="t-body">
+          Porque <strong>1 km = 1 000 m</strong>. Si escribimos esa igualdad como fracción <em>(1 000 m / 1 km)</em>, esa fracción vale exactamente <strong>1</strong>: el numerador y denominador representan la misma distancia.<br><br>
+          Multiplicar por 1 no cambia el valor físico, solo cambia la forma de expresarlo. ¡Esa es toda la magia!
+        </div>
+      </div>
+
+      <div class="teoria-card">
+        <span class="t-icon">📐</span>
+        <div class="t-title">Método del factor de conversión</div>
+        <div class="t-body">
+          <strong>Regla:</strong> la unidad que querés eliminar va en el <em>denominador</em> de la fracción, para que se cancele.<br><br>
+          Por cada unidad a transformar → una fracción de conversión.<br>
+          Dos unidades distintas = dos fracciones.
+        </div>
+        <div class="conversion-visual">
+          <div class="cv-title">Ejemplo: 90 km/h → m/s</div>
+          <div class="cv-formula">90 km/h × (1 000 m / 1 km) × (1 h / 3 600 s)</div>
+          <div class="cv-example">
+            = 90 000 / 3 600 <span class="hl">m/s</span><br>
+            = <span class="hl">25 m/s</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="teoria-card full">
+        <span class="t-icon">🔄</span>
+        <div class="t-title">Conversiones frecuentes — Cheat Sheet</div>
+        <div class="cheat-grid">
+          <div class="cheat-item"><span class="cheat-arrow">km/h → m/s</span><span class="cheat-rule">÷ 3,6</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">m/s → km/h</span><span class="cheat-rule">× 3,6</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">km → m</span><span class="cheat-rule">× 1 000</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">m → cm</span><span class="cheat-rule">× 100</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">m → mm</span><span class="cheat-rule">× 1 000</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">h → s</span><span class="cheat-rule">× 3 600</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">min → s</span><span class="cheat-rule">× 60</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">ms → s</span><span class="cheat-rule">÷ 1 000</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">t → kg</span><span class="cheat-rule">× 1 000</span></div>
+          <div class="cheat-item"><span class="cheat-arrow">kg → g</span><span class="cheat-rule">× 1 000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding: 16px 0;">
+      <button class="btn-primary" onclick="showSection('ejercicios')">¡Entendido! Ir a los ejercicios →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN EJERCICIOS                         -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="section-ejercicios">
+  <div class="ejercicios-header">
+    <h2>Ejercicios con Tutor IA</h2>
+    <p>Elegí un ejercicio. NewtonBot te va a guiar para que llegues a la solución vos mismo/a — sin darte la respuesta directa.</p>
+  </div>
+  <div class="ex-grid" id="exGrid"></div>
+</section>
+
+<!-- CHAT MODAL -->
+<div class="chat-overlay" id="chatOverlay" onclick="closeChatIfOutside(event)">
+  <div class="chat-modal" id="chatModal">
+    <div class="chat-modal-header">
+      <div class="bot-avatar">🤖</div>
+      <div>
+        <div class="chat-modal-title" id="cmTitle">NewtonBot</div>
+        <div class="chat-modal-ex" id="cmSub">—</div>
+      </div>
+      <button class="chat-close" onclick="closeChat()">✕</button>
+    </div>
+
+
+
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Escribí tu respuesta o pregunta…" rows="1"
+        onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="chat-send" id="chatSend" onclick="sendChatMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SECCIÓN JUEGO                              -->
+<!-- ══════════════════════════════════════════ -->
+<section class="section" id="section-juego">
+  <div class="juego-header">
+    <h2>⚡ Conversión Contrarreloj</h2>
+    <p>Convertí unidades contra el tiempo. Cada respuesta correcta suma puntos. ¡A ver hasta dónde llegás!</p>
+  </div>
+
+  <div id="gameContainer">
+    <!-- Start screen -->
+    <div class="game-start" id="gameStart">
+      <div style="font-size:3rem; margin-bottom:16px;">🎢</div>
+      <h3>¿Estás listo/a?</h3>
+      <p>Vas a tener <strong>15 segundos por pregunta</strong>. Convertí la mayor cantidad posible antes de que se acabe el tiempo.<br>Las preguntas mezclan todos los tipos de conversión de Semana 1.</p>
+      <div class="difficulty-select">
+        <button class="diff-btn selected" onclick="selectDiff('facil', this)">Fácil</button>
+        <button class="diff-btn" onclick="selectDiff('medio', this)">Medio</button>
+        <button class="diff-btn" onclick="selectDiff('dificil', this)">Difícil</button>
+      </div>
+      <button class="btn-game" onclick="startGame()">¡Jugar ahora!</button>
+    </div>
+
+    <!-- Game screen -->
+    <div id="gameScreen" style="display:none">
+      <div class="scoreboard">
+        <div class="score-box">
+          <div class="score-val" id="scoreVal">0</div>
+          <div class="score-label">puntos</div>
+        </div>
+        <div class="score-box">
+          <div class="score-val" id="questionNum">1/10</div>
+          <div class="score-label">pregunta</div>
+        </div>
+        <div class="score-box">
+          <div class="score-val" id="streakVal">0🔥</div>
+          <div class="score-label">racha</div>
+        </div>
+      </div>
+
+      <div class="timer-ring-wrap">
+        <div class="timer-ring">
+          <svg viewBox="0 0 90 90">
+            <circle class="timer-track" cx="45" cy="45" r="39"/>
+            <circle class="timer-fill" id="timerCircle" cx="45" cy="45" r="39"/>
+          </svg>
+          <div class="timer-text" id="timerText">15</div>
+        </div>
+      </div>
+
+      <div class="q-card" id="qCard">
+        <div class="q-category" id="qCategory">—</div>
+        <div class="q-text" id="qText">—</div>
+      </div>
+
+      <div class="feedback-bar" id="feedbackBar">—</div>
+
+      <div class="q-options" id="qOptions"></div>
+    </div>
+
+    <!-- End screen -->
+    <div class="game-end" id="gameEnd" style="display:none">
+      <div style="font-size:3rem;">🏆</div>
+      <h3>¡Terminaste!</h3>
+      <span class="final-score" id="finalScore">0 pts</span>
+      <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+      <p id="endMessage">—</p>
+      <div style="display:flex; gap:12px; justify-content:center; margin-top:16px;">
+        <button class="btn-game" onclick="restartGame()">↺ Jugar de nuevo</button>
+        <button class="btn-game" style="background:var(--accent2)" onclick="showSection('teoria')">📖 Repasar teoría</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    if (t.textContent.toLowerCase().includes(id === 'teoria' ? 'teoría' : id)) t.classList.add('active');
+  });
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════════════
+// EXERCISES DATA
+// ══════════════════════════════════════════════
+const exercises = [
+  { id:1, diff:'easy', name:'El tren fantasma', sub:'Conversión básica de km a m',
+    statement:'El circuito del tren fantasma mide 2 km. Expresá esa distancia en metros.',
+    hint:'¿Cuántos metros hay en 1 kilómetro? ¿Qué operación tenés que hacer con el 2?' },
+  { id:2, diff:'easy', name:'La montaña rusa', sub:'Velocidad: km/h → m/s',
+    statement:'La velocidad máxima de la montaña rusa es 108 km/h. Convertila a m/s.',
+    hint:'Hay dos unidades que cambiar: km→m y h→s. ¿Cuántos metros hay en 1 km? ¿Cuántos segundos en 1 hora?' },
+  { id:3, diff:'easy', name:'El free fall', sub:'Tiempo: ms → s',
+    statement:'El tiempo de caída libre en el free fall es 2 500 ms. Convertilo a segundos.',
+    hint:'¿Cuántos milisegundos hay en 1 segundo? Con eso ya podés armar el factor de conversión.' },
+  { id:4, diff:'medium', name:'El loop', sub:'Longitud: cm → m y dm',
+    statement:'La altura del loop es 1 200 cm.\na) Expresala en metros.\nb) Expresala en decímetros.',
+    hint:'Para ir de cm a m: ¿cuántos centímetros tiene 1 metro? Para dm: ¿cuántos centímetros hay en 1 dm?' },
+  { id:5, diff:'medium', name:'Carro de la montaña rusa', sub:'Masa: toneladas → kg → g',
+    statement:'La masa del carro es 0,8 t. Sabiendo que 1 t = 1 000 kg:\na) Convertí a kg.\nb) Convertí a gramos.',
+    hint:'Para a) tenés la equivalencia directa. Para b) ¿cuántos gramos tiene 1 kg? Podés encadenar las conversiones.' },
+  { id:6, diff:'medium', name:'Velocidad del viento', sub:'km/h → m/s → cm/s',
+    statement:'La velocidad del viento en la cima es 54 km/h.\na) Convertí a m/s.\nb) A partir del resultado, convertí a cm/s.',
+    hint:'Para a) usá el método de dos fracciones: km→m y h→s. Para b) ¿cuántos centímetros hay en 1 metro?' },
+  { id:7, diff:'medium', name:'Sistema de frenos', sub:'Comparación con conversión',
+    statement:'El freno actúa durante 0,03 minutos. El sistema exige que no supere 2 000 ms. ¿Cumple la condición?',
+    hint:'Necesitás llevar 0,03 min al mismo sistema que 2 000 ms para poder comparar. ¿Cómo pasás de min a s? ¿Y de s a ms?' },
+  { id:8, diff:'hard', name:'Go-kart', sub:'Desafío: comparar velocidades',
+    statement:'Un go-kart circula a 10,8 km/h. La velocidad máxima es 3 m/s. ¿Cumple el límite?',
+    hint:'¿Qué unidades necesitás para comparar? Elegí una y convertí la otra a ese sistema.' },
+  { id:9, diff:'hard', name:'El folleto del parque', sub:'Desafío: calcular y convertir',
+    statement:'El folleto dice: la montaña rusa viaja 1,5 km en 1 minuto. Un visitante dice que es 90 km/h.\na) ¿Tiene razón?\nb) Expresá la velocidad en m/s.',
+    hint:'¿Qué fórmula usás para calcular velocidad? ¿En qué unidades está el tiempo? Convertí antes de calcular.' },
+  { id:10, diff:'hard', name:'Ingeniero del parque', sub:'Desafío: encadenar conversiones',
+    statement:'El tren corre 8 horas a 25 m/s.\na) Convertí la velocidad a km/h.\nb) Calculá la distancia total en km.\nc) Expresá en metros.',
+    hint:'Para a) ya sabés ir de m/s a km/h. Para b) ¿qué fórmula relaciona v, t y d? Asegurate de que las unidades sean consistentes.' },
+];
+
+function renderExercises() {
+  const grid = document.getElementById('exGrid');
+  grid.innerHTML = exercises.map(ex => `
+    <div class="ex-card ${ex.diff}" onclick="openChat(${ex.id})">
+      <div class="ex-card-num">Ejercicio ${String(ex.id).padStart(2,'0')}</div>
+      <div class="ex-card-title">${ex.name}</div>
+      <div class="ex-card-sub">${ex.sub}</div>
+      <div class="ex-card-diff">${ex.diff === 'easy' ? '●○○ Básico' : ex.diff === 'medium' ? '●●○ Intermedio' : '●●● Desafío'}</div>
+    </div>
+  `).join('');
+}
+
+renderExercises();
+
+// ══════════════════════════════════════════════
+// CHAT / TUTOR
+// ══════════════════════════════════════════════
+let currentEx = null;
+let chatHistory = [];
+let chatWaiting = false;
+
+function openChat(id) {
+  currentEx = exercises.find(e => e.id === id);
+  chatHistory = [];
+  document.getElementById('cmTitle').textContent = `Ejercicio ${String(id).padStart(2,'0')} · ${currentEx.name}`;
+  document.getElementById('cmSub').textContent = currentEx.sub;
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('chatOverlay').classList.add('open');
+  addBotMsg(buildOpening(currentEx));
+}
+
+function closeChat() {
+  document.getElementById('chatOverlay').classList.remove('open');
+}
+
+function closeChatIfOutside(e) {
+  if (e.target === document.getElementById('chatOverlay')) closeChat();
+}
+
+function buildOpening(ex) {
+  return `¡Hola! 🎢 Vamos con el ejercicio <strong>${ex.name}</strong>.\n\n<em>${ex.statement.replace(/\n/g,'<br>')}</em>\n\n💭 ${ex.hint}\n\n¿Por dónde querés arrancar?`;
+}
+
+function buildSystemPrompt(ex) {
+  return `Sos NewtonBot, tutor de física para alumnos de 4.° año secundario (Argentina). Semana 1: Magnitudes, Unidades y Conversiones.
+
+EJERCICIO ACTUAL: "${ex.statement}"
+
+REGLA FUNDAMENTAL: NUNCA des la respuesta directa ni parcialmente. Guiá con preguntas socráticas. Si el alumno está bien encaminado, confirmá y preguntá el siguiente paso. Si se equivoca, hacé preguntas que lo lleven a notar el error. Si pide la solución, decile amablemente que tu trabajo es ayudarlo a pensar.
+
+CONOCIMIENTO: 1 km=1000m, 1h=3600s, 1min=60s, 1ms=0.001s, 1t=1000kg, 1kg=1000g. km/h÷3.6=m/s. Factor de conversión: fracción que vale 1, unidad a eliminar en denominador.
+
+TONO: Cálido, tutear (vos), respuestas cortas (máx 4 oraciones + 1 pregunta). Terminá SIEMPRE con una pregunta. Español rioplatense. Emojis con moderación.`;
+}
+
+async function sendChatMessage() {
+  if (chatWaiting || !currentEx) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  addUserMsg(text);
+  chatHistory.push({ role: 'user', content: text });
+
+  chatWaiting = true;
+  document.getElementById('chatSend').disabled = true;
+  showTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: buildSystemPrompt(currentEx),
+        messages: chatHistory
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.content?.map(b => b.text || '').join('')
+      || 'Ups, algo salió mal. ¿Intentamos de nuevo?';
+    hideTyping();
+    chatHistory.push({ role: 'assistant', content: reply });
+    addBotMsg(reply);
+  } catch(err) {
+    hideTyping();
+    addBotMsg('Tuve un problema de conexión 😅 Intentá de nuevo en un momento.');
+  }
+
+  chatWaiting = false;
+  document.getElementById('chatSend').disabled = false;
+}
+
+function addBotMsg(text) {
+  const msgs = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = `<div class="msg-av bot">🤖</div><div class="msg-bubble">${formatMsg(text)}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMsg(text) {
+  const msgs = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = `<div class="msg-av user-av">👤</div><div class="msg-bubble">${esc(text).replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'typing-indicator'; d.id = 'typingInd';
+  d.innerHTML = `<div class="msg-av bot">🤖</div><div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingInd');
+  if (t) t.remove();
+}
+
+function formatMsg(t) {
+  return '<p>' + t.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+}
+
+function esc(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+// ══════════════════════════════════════════════
+// JUEGO — CONVERSIÓN CONTRARRELOJ
+// ══════════════════════════════════════════════
+const QUESTIONS = {
+  facil: [
+    { cat:'Longitud', q:'2 km = __ m', opts:['200 m','2 000 m','20 m','20 000 m'], ans:1 },
+    { cat:'Tiempo', q:'3 000 ms = __ s', opts:['3 s','30 s','0,3 s','300 s'], ans:0 },
+    { cat:'Masa', q:'5 kg = __ g', opts:['500 g','5 000 g','50 g','50 000 g'], ans:1 },
+    { cat:'Longitud', q:'400 cm = __ m', opts:['4 m','40 m','0,4 m','0,04 m'], ans:0 },
+    { cat:'Velocidad', q:'36 km/h = __ m/s', opts:['10 m/s','36 m/s','100 m/s','3,6 m/s'], ans:0 },
+    { cat:'Tiempo', q:'2 h = __ s', opts:['120 s','720 s','7 200 s','72 s'], ans:2 },
+    { cat:'Longitud', q:'1 500 m = __ km', opts:['15 km','150 km','1,5 km','0,15 km'], ans:2 },
+    { cat:'Masa', q:'3 t = __ kg', opts:['300 kg','3 000 kg','30 kg','30 000 kg'], ans:1 },
+    { cat:'Tiempo', q:'5 min = __ s', opts:['50 s','500 s','300 s','5 000 s'], ans:2 },
+    { cat:'Velocidad', q:'72 km/h = __ m/s', opts:['72 m/s','20 m/s','7,2 m/s','200 m/s'], ans:1 },
+  ],
+  medio: [
+    { cat:'Velocidad', q:'15 m/s = __ km/h', opts:['15 km/h','150 km/h','54 km/h','5,4 km/h'], ans:2 },
+    { cat:'Longitud', q:'2 500 mm = __ m', opts:['25 m','2,5 m','250 m','0,25 m'], ans:1 },
+    { cat:'Tiempo', q:'0,5 h = __ min', opts:['5 min','50 min','30 min','500 min'], ans:2 },
+    { cat:'Masa', q:'750 g = __ kg', opts:['75 kg','7,5 kg','0,75 kg','0,075 kg'], ans:2 },
+    { cat:'Longitud', q:'3 dm = __ cm', opts:['3 cm','30 cm','300 cm','0,3 cm'], ans:1 },
+    { cat:'Velocidad', q:'108 km/h = __ m/s', opts:['108 m/s','30 m/s','3 m/s','300 m/s'], ans:1 },
+    { cat:'Tiempo', q:'7 200 s = __ h', opts:['720 h','72 h','7,2 h','2 h'], ans:3 },
+    { cat:'Longitud', q:'0,05 km = __ cm', opts:['50 cm','500 cm','5 000 cm','500 000 cm'], ans:2 },
+    { cat:'Masa', q:'2 500 kg = __ t', opts:['25 t','250 t','2,5 t','0,25 t'], ans:2 },
+    { cat:'Velocidad', q:'25 m/s = __ km/h', opts:['25 km/h','90 km/h','250 km/h','9 km/h'], ans:1 },
+  ],
+  dificil: [
+    { cat:'Velocidad', q:'10,8 km/h = __ m/s', opts:['10,8 m/s','3 m/s','0,3 m/s','30 m/s'], ans:1 },
+    { cat:'Tiempo', q:'0,03 min = __ ms', opts:['30 ms','300 ms','1 800 ms','3 000 ms'], ans:2 },
+    { cat:'Longitud', q:'2,5 × 10⁻³ km = __ cm', opts:['25 cm','250 cm','2 500 cm','2,5 cm'], ans:1 },
+    { cat:'Velocidad (doble)', q:'54 km/h = __ cm/s', opts:['540 cm/s','1 500 cm/s','54 cm/s','150 cm/s'], ans:1 },
+    { cat:'Tiempo', q:'1,5 h = __ ms', opts:['1 500 ms','90 000 ms','5 400 000 ms','540 000 ms'], ans:2 },
+    { cat:'Velocidad', q:'v = 1,5 km en 1 min = __ km/h', opts:['1,5 km/h','15 km/h','90 km/h','900 km/h'], ans:2 },
+    { cat:'Longitud', q:'5 nm = __ m', opts:['5×10⁻⁶ m','5×10⁻⁹ m','5×10⁻³ m','5×10⁻¹² m'], ans:1 },
+    { cat:'Masa (doble)', q:'0,8 t = __ g', opts:['800 g','8 000 g','80 000 g','800 000 g'], ans:3 },
+    { cat:'Velocidad', q:'d = 25 m/s × 8 h = __ km', opts:['200 km','720 km','72 km','2 000 km'], ans:1 },
+    { cat:'Tiempo', q:'2 × 10⁶ μs = __ s', opts:['2 s','200 s','2 000 s','20 s'], ans:0 },
+  ]
+};
+
+let gameDiff = 'facil';
+let gameQuestions = [];
+let gameIdx = 0;
+let gameScore = 0;
+let gameStreak = 0;
+let gameTimer = null;
+let timeLeft = 15;
+let answered = false;
+const TIME_LIMIT = 15;
+
+function selectDiff(d, btn) {
+  gameDiff = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function startGame() {
+  gameQuestions = shuffle([...QUESTIONS[gameDiff]]);
+  gameIdx = 0; gameScore = 0; gameStreak = 0;
+  document.getElementById('gameStart').style.display = 'none';
+  document.getElementById('gameEnd').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  if (gameIdx >= gameQuestions.length) { endGame(); return; }
+  answered = false;
+  const q = gameQuestions[gameIdx];
+  document.getElementById('qCard').className = 'q-card';
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('questionNum').textContent = `${gameIdx+1}/${gameQuestions.length}`;
+  document.getElementById('scoreVal').textContent = gameScore;
+  document.getElementById('streakVal').textContent = gameStreak + (gameStreak >= 3 ? '🔥' : '');
+  document.getElementById('feedbackBar').className = 'feedback-bar';
+  document.getElementById('feedbackBar').textContent = '';
+
+  const opts = document.getElementById('qOptions');
+  opts.innerHTML = q.opts.map((o, i) => `
+    <button class="q-opt" onclick="answerQ(${i})">${o}</button>
+  `).join('');
+
+  startTimer();
+}
+
+function answerQ(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(gameTimer);
+
+  const q = gameQuestions[gameIdx];
+  const opts = document.querySelectorAll('.q-opt');
+  opts.forEach(o => o.disabled = true);
+
+  const fb = document.getElementById('feedbackBar');
+
+  if (idx === q.ans) {
+    opts[idx].classList.add('correct');
+    document.getElementById('qCard').classList.add('correct');
+    gameStreak++;
+    const bonus = gameStreak >= 3 ? 20 : 10;
+    gameScore += bonus + Math.ceil(timeLeft * 2);
+    fb.className = 'feedback-bar correct show';
+    fb.textContent = gameStreak >= 3 ? `✓ ¡Correcto! +${bonus + Math.ceil(timeLeft*2)} pts 🔥 Racha x${gameStreak}` : `✓ ¡Correcto! +${bonus + Math.ceil(timeLeft*2)} pts`;
+  } else {
+    opts[idx].classList.add('wrong');
+    opts[q.ans].classList.add('correct');
+    document.getElementById('qCard').classList.add('wrong');
+    gameStreak = 0;
+    fb.className = 'feedback-bar wrong show';
+    fb.textContent = `✗ La correcta era: ${q.opts[q.ans]}`;
+  }
+
+  setTimeout(() => { gameIdx++; showQuestion(); }, 1800);
+}
+
+function startTimer() {
+  timeLeft = TIME_LIMIT;
+  updateTimerUI();
+  clearInterval(gameTimer);
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(gameTimer);
+      if (!answered) {
+        answered = true;
+        gameStreak = 0;
+        const q = gameQuestions[gameIdx];
+        document.querySelectorAll('.q-opt').forEach((o,i) => {
+          o.disabled = true;
+          if (i === q.ans) o.classList.add('correct');
+        });
+        const fb = document.getElementById('feedbackBar');
+        fb.className = 'feedback-bar wrong show';
+        fb.textContent = `⏰ ¡Tiempo! La correcta era: ${q.opts[q.ans]}`;
+        setTimeout(() => { gameIdx++; showQuestion(); }, 1800);
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const pct = timeLeft / TIME_LIMIT;
+  const circ = 245;
+  document.getElementById('timerCircle').style.strokeDashoffset = circ * (1 - pct);
+  document.getElementById('timerCircle').style.stroke = timeLeft <= 5 ? '#d4400a' : timeLeft <= 8 ? '#f0b429' : '#2563a8';
+  document.getElementById('timerText').textContent = timeLeft;
+}
+
+function endGame() {
+  clearInterval(gameTimer);
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('gameEnd').style.display = 'block';
+  document.getElementById('finalScore').textContent = gameScore + ' pts';
+  const total = gameQuestions.length;
+  let stars, msg;
+  if (gameScore >= total * 25) { stars = '⭐⭐⭐'; msg = '¡Excelente! Dominás las conversiones. ¡Seguí así!'; }
+  else if (gameScore >= total * 12) { stars = '⭐⭐'; msg = '¡Muy bien! Repasá las conversiones que fallaste y volvé a intentarlo.'; }
+  else { stars = '⭐'; msg = 'Buen intento. Te recomendamos repasar la teoría y volver a jugar.'; }
+  document.getElementById('starsDisplay').textContent = stars;
+  document.getElementById('endMessage').textContent = msg;
+}
+
+function restartGame() {
+  document.getElementById('gameEnd').style.display = 'none';
+  document.getElementById('gameStart').style.display = 'block';
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+</script>
+</body>
+</html>
