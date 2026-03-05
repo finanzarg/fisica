@@ -14,43 +14,62 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 3. Modelo y URL — gemini-2.0-flash es estable y rápido
+    // 3. Modelo actual del free tier
     const MODEL = "gemini-2.5-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
 
-    // 4. Historial completo desde el frontend
+    // 4. Datos del frontend
     const messages = req.body.messages || [];
+    const exerciseContext = req.body.exerciseContext || "";
 
-    // Gemini usa "model" en vez de "assistant"
-    const contents = messages.map(m => ({
+    // 5. Inyectar el contexto del ejercicio como primer turno del historial
+    //    Así Gemini siempre sabe de qué ejercicio se trata
+    const contextTurn = [
+      {
+        role: "user",
+        parts: [{ text: `Contexto del ejercicio que estamos trabajando:\n${exerciseContext}` }]
+      },
+      {
+        role: "model",
+        parts: [{ text: "Entendido. Voy a guiar al alumno en este ejercicio con preguntas socráticas, sin dar la respuesta directa." }]
+      }
+    ];
+
+    const historyTurns = messages.map(m => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }]
     }));
 
-    // 5. Cuerpo con system prompt + historial completo
+    const contents = [...contextTurn, ...historyTurns];
+
+    // 6. Cuerpo de la petición
     const geminiBody = {
       system_instruction: {
         parts: [{
-          text: `Eres un tutor de física socrático. Responde SIEMPRE en español.
+          text: `Sos NewtonBot, tutor de física para alumnos de 4° año secundario (Argentina). Semana 1: Magnitudes, Unidades y Conversiones.
 
-REGLAS ESTRICTAS que debes seguir en cada respuesta:
-- NUNCA des la respuesta final directamente.
-- Máximo 2 o 3 oraciones por respuesta.
-- Guiá al alumno con preguntas simples como: "¿Cuántos gramos hay en 1 kg?" o "¿Cuál sería el siguiente paso?".
-- Si el alumno acierta, confirmá brevemente con una sola oración y preguntá el siguiente paso.
-- Si el alumno está equivocado, no lo digas directamente: hacé una pregunta que lo lleve a descubrirlo.
-- Usá texto plano, SIN asteriscos, SIN markdown, SIN caracteres especiales ni chinos.
-- Para fórmulas usá texto simple, por ejemplo: F = m * a, o bien 1 kg = 1000 g.`
+REGLAS ESTRICTAS que debés cumplir en cada respuesta:
+- Respondé SIEMPRE en español rioplatense (tutear con "vos").
+- NUNCA des la respuesta final ni parcialmente.
+- Máximo 3 oraciones por respuesta. Terminá SIEMPRE con una pregunta.
+- Si el alumno acierta, confirmá con una oración y preguntá el siguiente paso.
+- Si se equivoca, hacé preguntas que lo lleven a notar el error por su cuenta, sin decirle que se equivocó directamente.
+- Si pide la solución directa, decile amablemente que tu trabajo es ayudarlo a pensar.
+- Usá texto plano. PROHIBIDO usar asteriscos, markdown, caracteres chinos o especiales.
+- Para fórmulas usá texto simple: por ejemplo F = m * a, o 1 kg = 1000 g.
+- Emojis: máximo 1 por mensaje.
+
+CONVERSIONES QUE CONOCÉS: 1 km = 1000 m, 1 h = 3600 s, 1 min = 60 s, 1 ms = 0.001 s, 1 t = 1000 kg, 1 kg = 1000 g. Para km/h a m/s se divide por 3.6.`
         }]
       },
       contents,
       generationConfig: {
         temperature: 0.5,
-        maxOutputTokens: 150,
+        maxOutputTokens: 180,
       }
     };
 
-    // 6. Llamada a la API
+    // 7. Llamada a la API
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -60,32 +79,38 @@ REGLAS ESTRICTAS que debes seguir en cada respuesta:
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Error de Google:", data);
+      console.error("Error de Google:", JSON.stringify(data));
+
+      // Error de quota: devolver mensaje amigable en vez de romper la UI
+      if (response.status === 429) {
+        return res.status(200).json({
+          id: Date.now().toString(),
+          type: "message",
+          role: "assistant",
+          content: [{ type: "text", text: "Recibí demasiadas consultas en poco tiempo. Esperá unos segundos y volvé a intentarlo." }]
+        });
+      }
+
       return res.status(response.status).json({ error: "Error en Gemini API", details: data });
     }
 
-    // 7. Extraer texto y limpiar cualquier markdown residual
+    // 8. Extraer texto y limpiar cualquier markdown residual
     let botText = data.candidates?.[0]?.content?.parts?.[0]?.text
       || "No pude generar una respuesta.";
 
     botText = botText
-      .replace(/\*\*(.*?)\*\*/g, '$1')  // quitar negrita **texto**
-      .replace(/\*(.*?)\*/g, '$1')       // quitar cursiva *texto*
-      .replace(/`(.*?)`/g, '$1')         // quitar código `texto`
-      .replace(/#{1,6}\s/g, '')          // quitar encabezados ## texto
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/`(.*?)`/g, '$1')
+      .replace(/#{1,6}\s/g, '')
       .trim();
 
-    // 8. Respuesta compatible con el frontend
+    // 9. Respuesta en el formato que espera el frontend
     return res.status(200).json({
       id: Date.now().toString(),
       type: "message",
       role: "assistant",
-      content: [
-        {
-          type: "text",
-          text: botText
-        }
-      ]
+      content: [{ type: "text", text: botText }]
     });
 
   } catch (error) {
