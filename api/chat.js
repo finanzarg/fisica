@@ -3,51 +3,55 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // 1. Cambiamos el nombre de la variable de entorno
+  // Asegúrate de tener esta variable en los Environment Variables de Vercel
   const apiKey = process.env.GOOGLE_GENERATION_AI_API_KEY;
   
   if (!apiKey) {
-    return res.status(500).json({ 
-      error: 'API key de Google no configurada', 
-      env: Object.keys(process.env).filter(k => k.includes('GOOGLE')) 
-    });
+    return res.status(500).json({ error: 'API key de Google no configurada' });
   }
 
   try {
-    // 2. La URL de Gemini usa el modelo y la API Key como parámetro
-    const MODEL = "gemini-1.5-flash"; 
+    // Usamos el identificador de Gemini 3 Flash Preview (el estándar actual)
+    const MODEL = "gemini-3-flash-preview"; 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
 
-    // 3. Adaptamos el cuerpo del mensaje. 
-    // Claude usa 'messages', Gemini usa 'contents'.
-    // Si tu frontend envía el formato de Claude, aquí lo "traducimos":
-    const prompt = req.body.messages?.[0]?.content || "Hola, preséntate como tutor de física";
+    // Extraemos el último mensaje del alumno para el prompt
+    const userMessage = req.body.messages?.[req.body.messages.length - 1]?.content || "Hola";
 
     const geminiBody = {
+      // 1. Instrucciones de sistema para que sea un buen tutor
+      system_instruction: {
+        parts: [{ 
+          text: "Eres un tutor de física amable y pedagógico. No des la respuesta directamente. Confirma si lo que dice el alumno es correcto, usa LaTeX para fórmulas (ej: $F = m \\cdot a$) y guía al alumno paso a paso." 
+        }]
+      },
+      // 2. Contenido de la conversación
       contents: [{
-        parts: [{ text: prompt }]
+        parts: [{ text: userMessage }]
       }],
       generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 800,
+        temperature: 0.7, // Ideal para que no sea repetitivo pero mantenga precisión
+        maxOutputTokens: 1000,
       }
     };
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(geminiBody),
     });
 
     const data = await response.json();
 
-    // 4. Devolvemos la respuesta formateada para que tu frontend no sufra
-    // Gemini devuelve la respuesta en data.candidates[0].content.parts[0].text
-    return res.status(response.status).json(data);
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Error en la API de Gemini');
+    }
+
+    // Devolvemos la respuesta formateada
+    return res.status(200).json(data);
 
   } catch (error) {
+    console.error("Error en el tutor:", error);
     return res.status(500).json({ error: error.message });
   }
 }
