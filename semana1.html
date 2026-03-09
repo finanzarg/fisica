@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FísicaLab · Semana 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f0e8;--bg2:#ede8dd;--ink:#1a1612;--ink2:#4a4540;--ink3:#8a8480;--accent:#d4400a;--accent2:#2563a8;--accent3:#16803c;--border:#d0c8bc;--white:#fffdf9;}
+*{box-sizing:border-box;margin:0;padding:0;}body{background:var(--bg);color:var(--ink);font-family:"Instrument Serif",Georgia,serif;min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;background:rgba(245,240,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;height:56px;gap:8px;}
+.nav-back{font-family:"DM Mono",monospace;font-size:0.7rem;color:var(--ink3);text-decoration:none;padding:5px 12px;border:1px solid var(--border);border-radius:999px;transition:all 0.2s;white-space:nowrap;}
+.nav-back:hover{color:var(--ink);border-color:var(--ink);}
+.nav-logo{font-family:"Syne",sans-serif;font-weight:800;font-size:0.95rem;color:var(--accent);margin-right:16px;white-space:nowrap;}.nav-logo span{color:var(--ink);}
+.nav-tab{font-family:"Syne",sans-serif;font-size:0.75rem;font-weight:700;padding:5px 14px;border-radius:999px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.nav-tab:hover{color:var(--ink);background:var(--bg2);}.nav-tab.active{background:var(--ink);color:var(--bg);}
+.section{display:none;}.section.active{display:block;}
+.page{max-width:1040px;margin:0 auto;padding:40px 24px 80px;}
+h2{font-family:"Syne",sans-serif;font-size:1.9rem;font-weight:800;margin-bottom:8px;}
+.subtitle{color:var(--ink2);font-size:0.95rem;margin-bottom:32px;}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 2px 10px rgba(26,22,18,0.07);}
+.card.full{grid-column:1/-1;}.card-icon{font-size:1.5rem;margin-bottom:10px;display:block;}
+.card-title{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.card-body{font-size:0.88rem;color:var(--ink2);line-height:1.7;}
+.card-body strong{color:var(--ink);font-style:italic;}
+table.si{width:100%;border-collapse:collapse;font-size:0.83rem;margin-top:14px;}
+table.si th{font-family:"DM Mono",monospace;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink3);padding:8px 10px;text-align:left;border-bottom:2px solid var(--border);}
+table.si td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--ink2);}
+table.si tr:last-child td{border-bottom:none;}
+.sym{font-family:"DM Mono",monospace;color:var(--accent);background:rgba(212,64,10,0.08);padding:2px 6px;border-radius:5px;font-size:0.78rem;}
+.prefix-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.px{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px;text-align:center;}
+.px-s{font-family:"DM Mono",monospace;font-size:0.95rem;font-weight:500;color:var(--accent2);display:block;}
+.px-n{font-family:"Syne",sans-serif;font-size:0.65rem;font-weight:700;display:block;margin:2px 0;}
+.px-v{font-family:"DM Mono",monospace;font-size:0.62rem;color:var(--ink3);display:block;}
+.conv-dark{background:var(--ink);border-radius:12px;padding:20px;margin-top:16px;color:var(--bg);}
+.conv-label{font-family:"DM Mono",monospace;font-size:0.65rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+.conv-formula{font-family:"Syne",sans-serif;font-size:1rem;font-weight:700;text-align:center;margin-bottom:12px;color:#f0b429;}
+.conv-ex{font-family:"DM Mono",monospace;font-size:0.8rem;color:#ccc;line-height:1.9;text-align:center;}
+.conv-ex .hl{color:#3ecf8e;}
+.cheat{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
+.cheat-item{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;}
+.cheat-ar{font-family:"DM Mono",monospace;font-size:0.72rem;font-weight:500;color:var(--accent2);flex-shrink:0;}
+.cheat-rule{font-family:"DM Mono",monospace;font-size:0.72rem;color:var(--ink2);}
+.btn-p{font-family:"Syne",sans-serif;font-size:0.82rem;font-weight:700;padding:11px 26px;background:var(--accent);color:white;border:none;border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.btn-p:hover{background:#b83508;transform:translateY(-1px);}
+.btn-s{font-family:"Syne",sans-serif;font-size:0.82rem;font-weight:700;padding:11px 26px;background:transparent;color:var(--ink);border:2px solid var(--ink);border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.btn-s:hover{background:var(--ink);color:var(--bg);}
+/* ejercicios */
+.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.ex-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.ex-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;}
+.ex-card.easy::before{background:var(--accent3);}.ex-card.medium::before{background:var(--accent2);}.ex-card.hard::before{background:var(--accent);}
+.ex-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(26,22,18,0.12);}
+.ex-num{font-family:"DM Mono",monospace;font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:9px;}
+.ex-title{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1.3;}
+.ex-sub{font-size:0.78rem;color:var(--ink3);font-style:italic;}
+.ex-diff{margin-top:12px;display:inline-block;font-family:"DM Mono",monospace;font-size:0.6rem;padding:3px 7px;border-radius:5px;text-transform:uppercase;}
+.ex-card.easy .ex-diff{background:rgba(22,128,60,0.1);color:var(--accent3);}
+.ex-card.medium .ex-diff{background:rgba(37,99,168,0.1);color:var(--accent2);}
+.ex-card.hard .ex-diff{background:rgba(212,64,10,0.1);color:var(--accent);}
+/* chat */
+.chat-ov{display:none;position:fixed;inset:0;background:rgba(26,22,18,0.55);z-index:200;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:16px;}
+.chat-ov.open{display:flex;}
+.chat-modal{background:var(--white);border:1px solid var(--border);border-radius:22px 22px 14px 14px;width:100%;max-width:660px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 -8px 48px rgba(26,22,18,0.2);animation:up 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes up{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.ch{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;}
+.bot-av{width:40px;height:40px;background:var(--ink);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ch-title{font-family:"Syne",sans-serif;font-size:0.9rem;font-weight:700;color:var(--ink);}
+.ch-sub{font-size:0.78rem;color:var(--ink3);font-style:italic;margin-top:2px;}
+.ch-close{margin-left:auto;background:var(--bg2);border:1px solid var(--border);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);transition:all 0.15s;flex-shrink:0;}
+.ch-close:hover{background:var(--border);color:var(--ink);}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:8px;animation:mi 0.2s ease-out;}
+@keyframes mi{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.mv{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;margin-top:2px;}
+.mv.bot{background:var(--ink);}.mv.uv{background:var(--bg2);border:1px solid var(--border);}
+.mb{max-width:75%;padding:10px 14px;border-radius:14px;font-size:0.86rem;line-height:1.65;}
+.msg.bot .mb{background:var(--bg2);border:1px solid var(--border);border-top-left-radius:3px;color:var(--ink);}
+.msg.user .mb{background:var(--ink);color:var(--bg);border-top-right-radius:3px;font-style:italic;}
+.td-wrap{display:flex;gap:8px;animation:mi 0.2s ease-out;}
+.td-dots{background:var(--bg2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:3px;padding:12px 16px;display:flex;gap:4px;align-items:center;}
+.td{width:5px;height:5px;background:var(--ink3);border-radius:50%;animation:bounce 1.2s infinite;}
+.td:nth-child(2){animation-delay:0.2s;}.td:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
+.chat-in{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;}
+.ci{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-family:"Instrument Serif",serif;font-size:0.88rem;color:var(--ink);outline:none;resize:none;min-height:40px;max-height:96px;transition:border-color 0.2s;}
+.ci:focus{border-color:var(--ink);}.ci::placeholder{color:var(--ink3);font-style:italic;}
+.cs{width:40px;height:40px;background:var(--ink);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.cs:hover{background:var(--accent);}.cs:disabled{background:var(--border);cursor:not-allowed;}
+.cs svg{width:15px;height:15px;fill:white;}
+/* game */
+.sboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.sb{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.sb-v{font-family:"Syne",sans-serif;font-size:1.8rem;font-weight:800;color:var(--ink);line-height:1;margin-bottom:3px;}
+.sb-l{font-family:"DM Mono",monospace;font-size:0.62rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;}
+.tr-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+.tr{position:relative;width:80px;height:80px;}
+.tr svg{transform:rotate(-90deg);width:80px;height:80px;}
+.tr circle{fill:none;stroke-width:6;stroke-linecap:round;}
+.tr-track{stroke:var(--border);}.tr-fill{stroke:var(--accent2);stroke-dasharray:220;stroke-dashoffset:0;transition:stroke-dashoffset 0.1s linear,stroke 0.3s;}
+.tr-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Syne",sans-serif;font-size:1.4rem;font-weight:800;color:var(--ink);}
+.qcard{background:var(--white);border:2px solid var(--border);border-radius:18px;padding:28px;margin-bottom:20px;transition:border-color 0.3s;min-height:140px;display:flex;flex-direction:column;justify-content:center;}
+.qcard.correct{border-color:var(--accent3);background:#f0fff4;}.qcard.wrong{border-color:var(--accent);background:#fff5f5;}
+.qcat{font-family:"DM Mono",monospace;font-size:0.62rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+.qtxt{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);line-height:1.3;}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.qopt{font-family:"DM Mono",monospace;font-size:0.85rem;font-weight:500;padding:12px 14px;background:var(--bg2);border:2px solid var(--border);border-radius:11px;cursor:pointer;transition:all 0.15s;color:var(--ink);text-align:center;}
+.qopt:hover:not(:disabled){border-color:var(--ink);transform:translateY(-1px);}
+.qopt.correct{background:#dcfce7;border-color:var(--accent3);color:#166534;}
+.qopt.wrong{background:#fee2e2;border-color:var(--accent);color:#991b1b;}
+.qopt:disabled{cursor:not-allowed;}
+.fb{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:"Syne",sans-serif;font-size:0.85rem;font-weight:700;margin-bottom:14px;transition:all 0.3s;opacity:0;}
+.fb.show{opacity:1;}.fb.correct{background:#dcfce7;color:#166534;}.fb.wrong{background:#fee2e2;color:#991b1b;}
+.gs,.ge{text-align:center;padding:40px 20px;}
+.gs h3,.ge h3{font-family:"Syne",sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:10px;}
+.gs p,.ge p{color:var(--ink2);margin-bottom:24px;font-size:0.9rem;line-height:1.6;}
+.ge .fs{font-family:"Syne",sans-serif;font-size:3rem;font-weight:800;color:var(--accent);display:block;margin:14px 0;}
+.btn-g{font-family:"Syne",sans-serif;font-size:0.88rem;font-weight:700;padding:12px 36px;background:var(--ink);color:var(--bg);border:none;border-radius:11px;cursor:pointer;transition:all 0.2s;}
+.btn-g:hover{background:var(--accent);transform:translateY(-2px);}
+.diff-sel{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.db{font-family:"DM Mono",monospace;font-size:0.72rem;padding:7px 18px;border:2px solid var(--border);border-radius:999px;background:transparent;cursor:pointer;color:var(--ink2);transition:all 0.15s;}
+.db.sel{border-color:var(--ink);background:var(--ink);color:var(--bg);}
+.stars{font-size:1.8rem;letter-spacing:3px;margin:10px 0;}
+/* ranking */
+.rank-sec{margin-top:28px;background:var(--white);border:1px solid var(--border);border-radius:18px;padding:24px;}
+.rank-title{font-family:"Syne",sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.rank-list{display:flex;flex-direction:column;gap:7px;}
+.ri{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:var(--bg2);}
+.ri.t1{background:rgba(212,64,10,0.07);border:1px solid rgba(212,64,10,0.2);}
+.ri.t2{background:rgba(37,99,168,0.07);border:1px solid rgba(37,99,168,0.2);}
+.ri.t3{background:rgba(22,128,60,0.07);border:1px solid rgba(22,128,60,0.2);}
+.rpos{font-family:"Syne",sans-serif;font-weight:800;font-size:0.82rem;width:22px;text-align:center;flex-shrink:0;}
+.rname{font-family:"Syne",sans-serif;font-size:0.82rem;font-weight:600;flex:1;}
+.rscore{font-family:"DM Mono",monospace;font-size:0.78rem;color:var(--accent);font-weight:500;}
+.rdate{font-family:"DM Mono",monospace;font-size:0.62rem;color:var(--ink3);}
+.save-wrap{margin-top:20px;}
+.save-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px 12px;font-family:"Instrument Serif",serif;font-size:0.92rem;color:var(--ink);outline:none;margin-bottom:10px;}
+.save-wrap input:focus{border-color:var(--ink);}
+.save-wrap input::placeholder{color:var(--ink3);font-style:italic;}
+@media(max-width:680px){.cards,.ex-grid,.qopts{grid-template-columns:1fr;}.card.full{grid-column:1;}.prefix-grid,.cheat{grid-template-columns:repeat(2,1fr);}.sboard{grid-template-columns:1fr 1fr;}.page{padding:24px 16px 60px;}nav{padding:0 12px;}.nav-back{display:none;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-back">← Inicio</a>
+  <div class="nav-logo">Física<span>Lab</span></div>
+  <button class="nav-tab active" onclick="show('teoria')">📖 Teoría</button>
+  <button class="nav-tab" onclick="show('ejercicios')">✏️ Ejercicios</button>
+  <button class="nav-tab" onclick="show('juego')">⚡ Juego</button>
+</nav>
+
+<section class="section active" id="section-teoria">
+<div class="page">
+  <div style="margin-bottom:32px;">
+    <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">Semana 01 · Laboratorio de Ciencias Naturales</div>
+    <h2>Magnitudes y Unidades</h2>
+    <p class="subtitle">El idioma del universo tiene números y unidades. Aprendé a medir, convertir y comunicar resultados como un científico.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn-p" onclick="show('ejercicios')">Ir a ejercicios →</button><button class="btn-s" onclick="show('juego')">⚡ Jugar</button></div>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">¿Qué es una magnitud física?</div>
+      <div class="card-body">Es toda propiedad de la naturaleza que puede <strong>medirse y expresarse con número y unidad</strong>. Sin unidad el número no tiene sentido físico.<br><br>Ejemplo: "la montaña rusa mide 42 metros" → número <strong>42</strong>, unidad <strong>metros</strong>. Decir solo "42" no dice nada sobre una distancia.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧭</span>
+      <div class="card-title">Escalares vs. Vectoriales</div>
+      <div class="card-body"><strong>Escalares:</strong> solo número y unidad. No tienen dirección. Ejemplos: masa (5 kg), temperatura (20 °C), tiempo (3 s).<br><br><strong>Vectoriales:</strong> además necesitan dirección y sentido. Se representan como flechas. Ejemplos: velocidad (50 km/h al norte), fuerza (10 N hacia abajo).</div>
+    </div>
+    <div class="card full">
+      <span class="card-icon">🌍</span>
+      <div class="card-title">Sistema Internacional de Unidades (SI) — 7 magnitudes base</div>
+      <div class="card-body">Adoptado en 1960. Es el sistema de todos los científicos e ingenieros del mundo.</div>
+      <table class="si">
+        <thead><tr><th>Magnitud</th><th>Unidad SI</th><th>Símbolo</th><th>Ejemplo en el parque</th></tr></thead>
+        <tbody>
+          <tr><td>Longitud</td><td>metro</td><td><span class="sym">m</span></td><td>42 m de altura del loop</td></tr>
+          <tr><td>Masa</td><td>kilogramo</td><td><span class="sym">kg</span></td><td>800 kg pesa el carro</td></tr>
+          <tr><td>Tiempo</td><td>segundo</td><td><span class="sym">s</span></td><td>3,2 s dura la caída libre</td></tr>
+          <tr><td>Temperatura</td><td>kelvin</td><td><span class="sym">K</span></td><td>293 K ≈ 20 °C temperatura ambiente</td></tr>
+          <tr><td>Corriente eléctrica</td><td>ampere</td><td><span class="sym">A</span></td><td>Motor del free fall</td></tr>
+          <tr><td>Intensidad luminosa</td><td>candela</td><td><span class="sym">cd</span></td><td>Iluminación del parque nocturno</td></tr>
+          <tr><td>Cantidad de sustancia</td><td>mol</td><td><span class="sym">mol</span></td><td>Reacciones químicas del combustible</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card full">
+      <span class="card-icon">🔢</span>
+      <div class="card-title">Múltiplos y Submúltiplos</div>
+      <div class="card-body">Los prefijos evitan escribir muchos ceros. Se aplican a cualquier unidad del SI.</div>
+      <div class="prefix-grid">
+        <div class="px"><span class="px-s">T</span><span class="px-n">tera</span><span class="px-v">10¹²</span></div>
+        <div class="px"><span class="px-s">G</span><span class="px-n">giga</span><span class="px-v">10⁹</span></div>
+        <div class="px"><span class="px-s">M</span><span class="px-n">mega</span><span class="px-v">10⁶</span></div>
+        <div class="px"><span class="px-s">k</span><span class="px-n">kilo</span><span class="px-v">10³</span></div>
+        <div class="px"><span class="px-s">h</span><span class="px-n">hecto</span><span class="px-v">10²</span></div>
+        <div class="px"><span class="px-s">da</span><span class="px-n">deca</span><span class="px-v">10¹</span></div>
+        <div class="px"><span class="px-s">d</span><span class="px-n">deci</span><span class="px-v">10⁻¹</span></div>
+        <div class="px"><span class="px-s">c</span><span class="px-n">centi</span><span class="px-v">10⁻²</span></div>
+        <div class="px"><span class="px-s">m</span><span class="px-n">mili</span><span class="px-v">10⁻³</span></div>
+        <div class="px"><span class="px-s">μ</span><span class="px-n">micro</span><span class="px-v">10⁻⁶</span></div>
+        <div class="px"><span class="px-s">n</span><span class="px-n">nano</span><span class="px-v">10⁻⁹</span></div>
+        <div class="px"><span class="px-s">p</span><span class="px-n">pico</span><span class="px-v">10⁻¹²</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💡</span>
+      <div class="card-title">¿Por qué funciona el factor de conversión?</div>
+      <div class="card-body">Porque <strong>1 km = 1 000 m</strong>. Si escribimos eso como fracción <em>(1 000 m ÷ 1 km)</em>, vale exactamente <strong>1</strong>. Multiplicar por 1 no cambia el valor físico, solo cambia la expresión.<br><br>La unidad que querés eliminar va en el <em>denominador</em> para que se cancele.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📐</span>
+      <div class="card-title">Método del factor de conversión</div>
+      <div class="card-body">Por cada unidad a transformar → una fracción. Dos unidades distintas = dos fracciones.</div>
+      <div class="conv-dark">
+        <div class="conv-label">Ejemplo: 90 km/h → m/s</div>
+        <div class="conv-formula">90 km/h × (1 000 m / 1 km) × (1 h / 3 600 s)</div>
+        <div class="conv-ex">= 90 000 ÷ 3 600 <span class="hl">m/s</span> = <span class="hl">25 m/s</span></div>
+      </div>
+    </div>
+    <div class="card full">
+      <span class="card-icon">🔄</span>
+      <div class="card-title">Conversiones frecuentes — Cheat Sheet</div>
+      <div class="cheat">
+        <div class="cheat-item"><span class="cheat-ar">km/h → m/s</span><span class="cheat-rule">÷ 3,6</span></div>
+        <div class="cheat-item"><span class="cheat-ar">m/s → km/h</span><span class="cheat-rule">× 3,6</span></div>
+        <div class="cheat-item"><span class="cheat-ar">km → m</span><span class="cheat-rule">× 1 000</span></div>
+        <div class="cheat-item"><span class="cheat-ar">m → cm</span><span class="cheat-rule">× 100</span></div>
+        <div class="cheat-item"><span class="cheat-ar">m → mm</span><span class="cheat-rule">× 1 000</span></div>
+        <div class="cheat-item"><span class="cheat-ar">h → s</span><span class="cheat-rule">× 3 600</span></div>
+        <div class="cheat-item"><span class="cheat-ar">min → s</span><span class="cheat-rule">× 60</span></div>
+        <div class="cheat-item"><span class="cheat-ar">ms → s</span><span class="cheat-rule">÷ 1 000</span></div>
+        <div class="cheat-item"><span class="cheat-ar">t → kg</span><span class="cheat-rule">× 1 000</span></div>
+        <div class="cheat-item"><span class="cheat-ar">kg → g</span><span class="cheat-rule">× 1 000</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;"><button class="btn-p" onclick="show('ejercicios')">¡Entendido! Ir a los ejercicios →</button></div>
+</div>
+</section>
+
+<section class="section" id="section-ejercicios">
+<div class="page">
+  <h2>Ejercicios con Tutor IA</h2>
+  <p class="subtitle">Elegí un ejercicio. NewtonBot te guía para que llegues a la solución vos mismo/a.</p>
+  <div class="ex-grid" id="exGrid"></div>
+</div>
+</section>
+
+<div class="chat-ov" id="chatOv" onclick="closeIfOut(event)">
+  <div class="chat-modal">
+    <div class="ch">
+      <div class="bot-av">🤖</div>
+      <div><div class="ch-title" id="cmT">NewtonBot</div><div class="ch-sub" id="cmS">—</div></div>
+      <div class="ch-close" onclick="closeChat()">✕</div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-in">
+      <textarea class="ci" id="ci" placeholder="Escribí tu respuesta o pregunta…" rows="1" onkeydown="ck(event)" oninput="ar(this)"></textarea>
+      <button class="cs" id="cs" onclick="sendMsg()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="section-juego">
+<div class="page" style="max-width:760px;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <h2>⚡ Conversión Contrarreloj</h2>
+    <p class="subtitle">Convertí unidades antes de que se acabe el tiempo. ¡A ver cuántos puntos hacés!</p>
+  </div>
+  <div id="gStart">
+    <div style="text-align:center;padding:24px 0 32px;">
+      <div style="font-size:2.5rem;margin-bottom:14px;">🎢</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:10px;">¿Estás listo/a?</h3>
+      <p style="color:var(--ink2);margin-bottom:20px;font-size:0.9rem;"><strong>30 segundos</strong> por pregunta. Convertí la mayor cantidad posible.</p>
+      <div class="diff-sel">
+        <button class="db sel" onclick="setDiff('facil',this)">Fácil</button>
+        <button class="db" onclick="setDiff('medio',this)">Medio</button>
+        <button class="db" onclick="setDiff('dificil',this)">Difícil</button>
+      </div>
+      <button class="btn-g" onclick="startGame()">¡Jugar ahora!</button>
+    </div>
+    <div class="rank-sec">
+      <div class="rank-title">🏆 Ranking Global</div>
+      <div class="rank-list" id="rl"><div style="color:var(--ink3);font-size:0.83rem;text-align:center;padding:14px;">Cargando…</div></div>
+    </div>
+  </div>
+  <div id="gScreen" style="display:none">
+    <div class="sboard">
+      <div class="sb"><div class="sb-v" id="sv">0</div><div class="sb-l">puntos</div></div>
+      <div class="sb"><div class="sb-v" id="qn">1/10</div><div class="sb-l">pregunta</div></div>
+      <div class="sb"><div class="sb-v" id="stk">0</div><div class="sb-l">racha 🔥</div></div>
+    </div>
+    <div class="tr-wrap"><div class="tr">
+      <svg viewBox="0 0 80 80"><circle class="tr-track" cx="40" cy="40" r="34"/><circle class="tr-fill" id="trc" cx="40" cy="40" r="34"/></svg>
+      <div class="tr-txt" id="trt">30</div>
+    </div></div>
+    <div class="qcard" id="qc"><div class="qcat" id="qcat">—</div><div class="qtxt" id="qtxt">—</div></div>
+    <div class="fb" id="fb">—</div>
+    <div class="qopts" id="qopts"></div>
+  </div>
+  <div class="ge" id="gEnd" style="display:none">
+    <div style="font-size:2.5rem;">🏆</div>
+    <h3>¡Terminaste!</h3>
+    <span class="fs" id="fsc">0 pts</span>
+    <div class="stars" id="strs">⭐⭐⭐</div>
+    <p id="emsg">—</p>
+    <div class="save-wrap">
+      <input type="text" id="pname" placeholder="Tu nombre para el ranking…" maxlength="30">
+      <button class="btn-g" onclick="saveScore()" id="sbtn">Guardar en ranking 🏆</button>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-g" onclick="restartGame()">↺ Jugar de nuevo</button>
+      <button class="btn-g" style="background:var(--accent2)" onclick="show('teoria')">📖 Repasar teoría</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  const map={teoria:'Teoría',ejercicios:'Ejercicios',juego:'Juego'};
+  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.textContent.includes(map[id]))t.classList.add('active');});
+  window.scrollTo(0,0);
+  if(id==='juego')loadRanking();
+}
+
+const EX=[
+  {id:1,d:'easy',n:'El tren fantasma',s:'Conversión: km → m',st:'El circuito del tren fantasma mide 2 km. Expresá esa distancia en metros.',h:'¿Cuántos metros hay en 1 km?'},
+  {id:2,d:'easy',n:'La montaña rusa',s:'Velocidad: km/h → m/s',st:'La velocidad máxima es 108 km/h. Convertila a m/s.',h:'Hay dos unidades que cambiar: km→m y h→s.'},
+  {id:3,d:'easy',n:'El free fall',s:'Tiempo: ms → s',st:'El tiempo de caída es 2 500 ms. Convertilo a segundos.',h:'¿Cuántos milisegundos hay en 1 segundo?'},
+  {id:4,d:'medium',n:'El loop',s:'Longitud: cm → m y dm',st:'La altura del loop es 1 200 cm. a) En metros. b) En decímetros.',h:'Para cm a m: ¿cuántos cm tiene 1 m?'},
+  {id:5,d:'medium',n:'Carro de la MR',s:'Masa: t → kg → g',st:'La masa del carro es 0,8 t. a) Convertí a kg. b) A gramos.',h:'1 t = 1 000 kg. Luego 1 kg = 1 000 g.'},
+  {id:6,d:'medium',n:'Velocidad del viento',s:'km/h → m/s → cm/s',st:'La velocidad del viento es 54 km/h. a) A m/s. b) A cm/s.',h:'Para a): dos fracciones. Para b): ¿cm en 1 m?'},
+  {id:7,d:'medium',n:'Sistema de frenos',s:'Comparación con conversión',st:'El freno actúa 0,03 min. ¿Supera los 2 000 ms?',h:'Pasá 0,03 min a ms. Tip: min→s→ms.'},
+  {id:8,d:'hard',n:'Go-kart',s:'Comparar velocidades',st:'Un go-kart va a 10,8 km/h. ¿Supera el límite de 3 m/s?',h:'Llevá las dos a la misma unidad para comparar.'},
+  {id:9,d:'hard',n:'El folleto del parque',s:'Calcular y convertir',st:'La MR recorre 1,5 km en 1 minuto. ¿Es 90 km/h? b) Expresá en m/s.',h:'¿Qué fórmula usás para velocidad?'},
+  {id:10,d:'hard',n:'Ingeniero del parque',s:'Encadenar conversiones',st:'El tren corre 8 h a 25 m/s. a) Velocidad en km/h. b) Distancia en km. c) En m.',h:'Para b) usá la fórmula de distancia.'},
+];
+
+document.getElementById('exGrid').innerHTML=EX.map(e=>`
+  <div class="ex-card ${e.d}" onclick="openChat(${e.id})">
+    <div class="ex-num">Ejercicio ${String(e.id).padStart(2,'0')}</div>
+    <div class="ex-title">${e.n}</div>
+    <div class="ex-sub">${e.s}</div>
+    <div class="ex-diff">${e.d==='easy'?'●○○ Básico':e.d==='medium'?'●●○ Intermedio':'●●● Desafío'}</div>
+  </div>`).join('');
+
+let curEx=null,hist=[],waiting=false;
+function openChat(id){
+  curEx=EX.find(e=>e.id===id);hist=[];
+  document.getElementById('cmT').textContent=`Ejercicio ${String(id).padStart(2,'0')} · ${curEx.n}`;
+  document.getElementById('cmS').textContent=curEx.s;
+  document.getElementById('chatMsgs').innerHTML='';
+  document.getElementById('chatOv').classList.add('open');
+  addBot(`¡Hola! 🎢 Vamos con <strong>${curEx.n}</strong>.<br><br><em>${curEx.st.replace(/\n/g,'<br>')}</em><br><br>💭 ${curEx.h}<br><br>¿Por dónde querés arrancar?`);
+}
+function closeChat(){document.getElementById('chatOv').classList.remove('open');}
+function closeIfOut(e){if(e.target===document.getElementById('chatOv'))closeChat();}
+
+async function sendMsg(){
+  if(waiting||!curEx)return;
+  const inp=document.getElementById('ci');
+  const txt=inp.value.trim();if(!txt)return;
+  inp.value='';inp.style.height='auto';
+  addUser(txt);hist.push({role:'user',content:txt});
+  waiting=true;document.getElementById('cs').disabled=true;showTyping();
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({exerciseContext:`Semana 1. Ejercicio: ${curEx.st}. Guiar con preguntas socráticas, NUNCA dar la respuesta.`,messages:hist})});
+    const d=await r.json();
+    const reply=d.content?.map(b=>b.text||'').join('')||'Ups, algo salió mal.';
+    hideTyping();hist.push({role:'assistant',content:reply});addBot(reply);
+  }catch(err){hideTyping();addBot('Problema de conexión. Intentá de nuevo.');}
+  waiting=false;document.getElementById('cs').disabled=false;
+}
+function addBot(t){const m=document.getElementById('chatMsgs');const d=document.createElement('div');d.className='msg bot';d.innerHTML=`<div class="mv bot">🤖</div><div class="mb"><p>${t.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')}</p></div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function addUser(t){const m=document.getElementById('chatMsgs');const d=document.createElement('div');d.className='msg user';d.innerHTML=`<div class="mv uv">👤</div><div class="mb">${t.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function showTyping(){const m=document.getElementById('chatMsgs');const d=document.createElement('div');d.className='td-wrap';d.id='tdi';d.innerHTML=`<div class="mv bot">🤖</div><div class="td-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+function hideTyping(){const t=document.getElementById('tdi');if(t)t.remove();}
+function ck(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+
+const QS={
+  facil:[
+    {cat:'Longitud',q:'2 km = __ m',opts:['200 m','2 000 m','20 m','20 000 m'],a:1},
+    {cat:'Tiempo',q:'3 000 ms = __ s',opts:['3 s','30 s','0,3 s','300 s'],a:0},
+    {cat:'Masa',q:'5 kg = __ g',opts:['500 g','5 000 g','50 g','50 000 g'],a:1},
+    {cat:'Longitud',q:'400 cm = __ m',opts:['4 m','40 m','0,4 m','0,04 m'],a:0},
+    {cat:'Velocidad',q:'36 km/h = __ m/s',opts:['10 m/s','36 m/s','100 m/s','3,6 m/s'],a:0},
+    {cat:'Tiempo',q:'2 h = __ s',opts:['120 s','720 s','7 200 s','72 s'],a:2},
+    {cat:'Longitud',q:'1 500 m = __ km',opts:['15 km','150 km','1,5 km','0,15 km'],a:2},
+    {cat:'Masa',q:'3 t = __ kg',opts:['300 kg','3 000 kg','30 kg','30 000 kg'],a:1},
+    {cat:'Tiempo',q:'5 min = __ s',opts:['50 s','500 s','300 s','5 000 s'],a:2},
+    {cat:'Velocidad',q:'72 km/h = __ m/s',opts:['72 m/s','20 m/s','7,2 m/s','200 m/s'],a:1},
+  ],
+  medio:[
+    {cat:'Velocidad',q:'15 m/s = __ km/h',opts:['15 km/h','150 km/h','54 km/h','5,4 km/h'],a:2},
+    {cat:'Longitud',q:'2 500 mm = __ m',opts:['25 m','2,5 m','250 m','0,25 m'],a:1},
+    {cat:'Tiempo',q:'0,5 h = __ min',opts:['5 min','50 min','30 min','500 min'],a:2},
+    {cat:'Masa',q:'750 g = __ kg',opts:['75 kg','7,5 kg','0,75 kg','0,075 kg'],a:2},
+    {cat:'Longitud',q:'3 dm = __ cm',opts:['3 cm','30 cm','300 cm','0,3 cm'],a:1},
+    {cat:'Velocidad',q:'108 km/h = __ m/s',opts:['108 m/s','30 m/s','3 m/s','300 m/s'],a:1},
+    {cat:'Tiempo',q:'7 200 s = __ h',opts:['720 h','72 h','7,2 h','2 h'],a:3},
+    {cat:'Longitud',q:'0,05 km = __ cm',opts:['50 cm','500 cm','5 000 cm','500 000 cm'],a:2},
+    {cat:'Masa',q:'2 500 kg = __ t',opts:['25 t','250 t','2,5 t','0,25 t'],a:2},
+    {cat:'Velocidad',q:'25 m/s = __ km/h',opts:['25 km/h','90 km/h','250 km/h','9 km/h'],a:1},
+  ],
+  dificil:[
+    {cat:'Velocidad',q:'10,8 km/h = __ m/s',opts:['10,8 m/s','3 m/s','0,3 m/s','30 m/s'],a:1},
+    {cat:'Tiempo',q:'0,03 min = __ ms',opts:['30 ms','300 ms','1 800 ms','3 000 ms'],a:2},
+    {cat:'Velocidad',q:'54 km/h = __ cm/s',opts:['540 cm/s','1 500 cm/s','54 cm/s','150 cm/s'],a:1},
+    {cat:'Tiempo',q:'1,5 h = __ ms',opts:['1 500 ms','90 000 ms','5 400 000 ms','540 000 ms'],a:2},
+    {cat:'Velocidad',q:'1,5 km en 1 min = __ km/h',opts:['1,5 km/h','15 km/h','90 km/h','900 km/h'],a:2},
+    {cat:'Longitud',q:'5 nm = __ m',opts:['5×10⁻⁶ m','5×10⁻⁹ m','5×10⁻³ m','5×10⁻¹² m'],a:1},
+    {cat:'Masa',q:'0,8 t = __ g',opts:['800 g','8 000 g','80 000 g','800 000 g'],a:3},
+    {cat:'Longitud',q:'2,5×10⁻³ km = __ cm',opts:['25 cm','250 cm','2 500 cm','2,5 cm'],a:1},
+    {cat:'Tiempo',q:'2×10⁶ μs = __ s',opts:['2 s','200 s','2 000 s','20 s'],a:0},
+    {cat:'Velocidad',q:'25 m/s × 8 h = __ km',opts:['200 km','720 km','72 km','2 000 km'],a:1},
+  ]
+};
+
+const TL=30;
+let gDiff='facil',gQ=[],gI=0,gScore=0,gStreak=0,gTimer=null,tLeft=30,gAnswered=false;
+
+function setDiff(d,btn){gDiff=d;document.querySelectorAll('.db').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+function startGame(){
+  gQ=shuffle([...QS[gDiff]]);gI=0;gScore=0;gStreak=0;
+  document.getElementById('gStart').style.display='none';
+  document.getElementById('gEnd').style.display='none';
+  document.getElementById('gScreen').style.display='block';
+  showQ();
+}
+function showQ(){
+  if(gI>=gQ.length){endGame();return;}
+  gAnswered=false;
+  const q=gQ[gI];
+  document.getElementById('qc').className='qcard';
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('qn').textContent=`${gI+1}/${gQ.length}`;
+  document.getElementById('sv').textContent=gScore;
+  document.getElementById('stk').textContent=gStreak;
+  document.getElementById('fb').className='fb';
+  document.getElementById('qopts').innerHTML=q.opts.map((o,i)=>`<button class="qopt" onclick="ansQ(${i})">${o}</button>`).join('');
+  startTimer();
+}
+function ansQ(idx){
+  if(gAnswered)return;gAnswered=true;clearInterval(gTimer);
+  const q=gQ[gI];
+  document.querySelectorAll('.qopt').forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb');
+  if(idx===q.a){
+    document.querySelectorAll('.qopt')[idx].classList.add('correct');
+    document.getElementById('qc').classList.add('correct');
+    gStreak++;const bonus=gStreak>=3?20:10;
+    gScore+=bonus+Math.ceil(tLeft*1.5);
+    fb.className='fb correct show';
+    fb.textContent=gStreak>=3?`✓ ¡Correcto! +${bonus+Math.ceil(tLeft*1.5)} pts 🔥 Racha x${gStreak}`:`✓ ¡Correcto! +${bonus+Math.ceil(tLeft*1.5)} pts`;
+  }else{
+    document.querySelectorAll('.qopt')[idx].classList.add('wrong');
+    document.querySelectorAll('.qopt')[q.a].classList.add('correct');
+    document.getElementById('qc').classList.add('wrong');gStreak=0;
+    fb.className='fb wrong show';fb.textContent=`✗ La correcta era: ${q.opts[q.a]}`;
+  }
+  setTimeout(()=>{gI++;showQ();},1800);
+}
+function startTimer(){
+  tLeft=TL;updTimer();clearInterval(gTimer);
+  gTimer=setInterval(()=>{
+    tLeft--;updTimer();
+    if(tLeft<=0){
+      clearInterval(gTimer);
+      if(!gAnswered){
+        gAnswered=true;gStreak=0;
+        const q=gQ[gI];
+        document.querySelectorAll('.qopt').forEach((o,i)=>{o.disabled=true;if(i===q.a)o.classList.add('correct');});
+        const fb=document.getElementById('fb');
+        fb.className='fb wrong show';fb.textContent=`⏰ Tiempo. La correcta era: ${q.opts[q.a]}`;
+        setTimeout(()=>{gI++;showQ();},1800);
+      }
+    }
+  },1000);
+}
+function updTimer(){
+  const p=tLeft/TL;
+  document.getElementById('trc').style.strokeDashoffset=220*(1-p);
+  document.getElementById('trc').style.stroke=tLeft<=8?'#d4400a':tLeft<=15?'#f0b429':'#2563a8';
+  document.getElementById('trt').textContent=tLeft;
+}
+function endGame(){
+  clearInterval(gTimer);
+  document.getElementById('gScreen').style.display='none';
+  document.getElementById('gEnd').style.display='block';
+  document.getElementById('fsc').textContent=gScore+' pts';
+  const tot=gQ.length;
+  let stars,msg;
+  if(gScore>=tot*30){stars='⭐⭐⭐';msg='¡Excelente! Dominás las conversiones.';}
+  else if(gScore>=tot*15){stars='⭐⭐';msg='¡Muy bien! Repasá las que fallaste.';}
+  else{stars='⭐';msg='Buen intento. Te recomendamos repasar la teoría.';}
+  document.getElementById('strs').textContent=stars;
+  document.getElementById('emsg').textContent=msg;
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').textContent='Guardar en ranking 🏆';
+}
+function restartGame(){
+  document.getElementById('gEnd').style.display='none';
+  document.getElementById('gStart').style.display='block';
+  loadRanking();
+}
+async function loadRanking(){
+  try{
+    const r=await fetch('/api/ranking?semana=semana1&juego=trivia');
+    const d=await r.json();
+    const list=document.getElementById('rl');
+    if(!d||!d.length){list.innerHTML='<div style="color:var(--ink3);font-size:0.82rem;text-align:center;padding:12px;">¡Sé el primero en el ranking!</div>';return;}
+    list.innerHTML=d.slice(0,10).map((r,i)=>`
+      <div class="ri ${i===0?'t1':i===1?'t2':i===2?'t3':''}">
+        <div class="rpos">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="rname">${r.nombre}</div>
+        <div class="rscore">${r.score} pts</div>
+        <div class="rdate">${new Date(r.fecha).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('rl').innerHTML='<div style="color:var(--ink3);font-size:0.82rem;text-align:center;padding:12px;">Ranking no disponible.</div>';}
+}
+async function saveScore(){
+  const nombre=document.getElementById('pname').value.trim();
+  if(!nombre){document.getElementById('pname').style.borderColor='var(--accent)';return;}
+  const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='Guardando…';
+  try{
+    await fetch('/api/ranking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,score:gScore,semana:'semana1',juego:'trivia'})});
+    btn.textContent='✓ ¡Guardado!';
+  }catch(e){btn.textContent='Error';btn.disabled=false;}
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+</script>
+</body>
+</html>
