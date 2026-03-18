@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FísicaLab · Semana 3 · MRU</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg2:#1a1a28;--ink:#f0eee8;--ink2:#b8b5ae;--ink3:#6b6880;--accent:#e8c547;--accent2:#4f8ef7;--accent3:#3ecf8e;--accent4:#c084fc;--border:#1e1e2e;--surface:#12121a;}
+*{box-sizing:border-box;margin:0;padding:0;}body{background:var(--bg);color:var(--ink);font-family:Arial,sans-serif;min-height:100vh;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;height:56px;gap:8px;}
+.nav-back{font-family:Arial,sans-serif;font-size:0.84rem;color:var(--ink3);text-decoration:none;padding:5px 12px;border:1px solid var(--border);border-radius:999px;transition:all 0.2s;white-space:nowrap;}
+.nav-back:hover{color:var(--ink);border-color:var(--ink);}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:var(--accent4);margin-right:16px;white-space:nowrap;}.nav-logo span{color:var(--ink);}
+.nav-tab{font-family:Arial,sans-serif;font-size:0.9rem;font-weight:700;padding:5px 14px;border-radius:999px;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.nav-tab:hover{color:var(--ink);background:var(--bg2);}.nav-tab.active{background:var(--ink);color:var(--bg);}
+.section{display:none;}.section.active{display:block;}
+.page{max-width:1040px;margin:0 auto;padding:40px 24px 80px;}
+h2{font-family:'Syne',sans-serif;font-size:2.28rem;font-weight:800;margin-bottom:8px;}
+h3.sh{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin:28px 0 12px;color:var(--ink);}
+.subtitle{color:var(--ink2);font-size:1.14rem;margin-bottom:32px;font-family:Arial,sans-serif;}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;}
+.card.full{grid-column:1/-1;}
+.card-icon{font-size:1.5rem;margin-bottom:10px;display:block;}
+.card-title{font-family:'Syne',sans-serif;font-size:1.14rem;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.card-body{font-family:Arial,sans-serif;font-size:1.04rem;color:var(--ink2);line-height:1.75;}
+.card-body strong{color:var(--ink);}
+
+/* EQUATIONS BOX */
+.eq-box{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent4);border-radius:0 12px 12px 0;padding:16px 20px;margin:14px 0;}
+.eq-label{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+.eq-row{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--accent4);line-height:2.1;}
+.eq-row .hl{color:var(--accent);}
+.eq-row .ok{color:var(--accent3);}
+.eq-row small{color:var(--ink3);font-size:0.78rem;}
+
+/* CONCEPT TABLE */
+table.ct{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:14px;}
+table.ct th{font-family:Arial,sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink3);padding:8px 10px;text-align:left;border-bottom:2px solid var(--border);}
+table.ct td{padding:10px;border-bottom:1px solid var(--border);color:var(--ink2);font-family:Arial,sans-serif;}
+table.ct tr:last-child td{border-bottom:none;}
+table.ct .tag{font-family:'DM Mono',monospace;font-size:0.75rem;background:rgba(192,132,252,0.12);color:var(--accent4);padding:2px 7px;border-radius:4px;border:1px solid rgba(192,132,252,0.25);}
+table.ct .no{color:var(--ink3);font-size:0.8rem;}
+table.ct .si2{color:var(--accent3);}
+
+/* GRAPH CARD */
+.graph-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:14px;}
+.graph-title{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+canvas.mini-chart{width:100%;height:160px;display:block;}
+
+/* CLAVE BOX */
+.clave{background:rgba(192,132,252,0.06);border:1px solid rgba(192,132,252,0.2);border-radius:10px;padding:14px 16px;margin:14px 0;display:flex;gap:10px;align-items:flex-start;}
+.clave-icon{font-size:1.1rem;flex-shrink:0;}
+.clave-txt{font-size:0.86rem;color:var(--ink2);line-height:1.65;}
+.clave-txt strong{color:var(--ink);}
+
+/* SOLVED EXAMPLE */
+.solved{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin:14px 0;}
+.solved-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--accent4);margin-bottom:12px;}
+.solved-body{font-family:'DM Mono',monospace;font-size:0.88rem;color:var(--ink2);line-height:2.1;}
+.solved-body .hl{color:var(--accent);}
+.solved-body .ans{color:var(--accent3);font-weight:700;}
+
+/* BTNS */
+.btn-p{font-family:Arial,sans-serif;font-size:0.98rem;font-weight:700;padding:11px 26px;background:var(--accent4);color:#0a0a0f;border:none;border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.btn-p:hover{background:#a855f7;transform:translateY(-1px);}
+.btn-s{font-family:Arial,sans-serif;font-size:0.98rem;font-weight:700;padding:11px 26px;background:transparent;color:var(--ink);border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.btn-s:hover{background:var(--ink);color:var(--bg);}
+
+/* ===== SIMULATOR ===== */
+.sim-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px;margin:24px 0;}
+.sim-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:var(--accent4);margin-bottom:6px;}
+.sim-subtitle{font-size:0.82rem;color:var(--ink3);margin-bottom:20px;}
+.sim-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.sim-ctrl{display:flex;flex-direction:column;gap:6px;}
+.sim-ctrl label{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;}
+.sim-ctrl input[type=range]{width:100%;accent-color:var(--accent4);}
+.sim-ctrl .val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--ink);}
+.sim-track{position:relative;background:#0d0d16;border:1px solid var(--border);border-radius:12px;height:90px;overflow:hidden;margin-bottom:16px;}
+.sim-road{position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(180deg,#1a1a28 0%,#0d0d16 100%);}
+.sim-line{position:absolute;bottom:20px;left:0;right:0;height:2px;background:repeating-linear-gradient(90deg,var(--border) 0px,var(--border) 20px,transparent 20px,transparent 40px);}
+.sim-obj{position:absolute;font-size:1.6rem;bottom:22px;transition:left 0.05s linear;transform:translateX(-50%);user-select:none;filter:drop-shadow(0 0 8px rgba(192,132,252,0.5));}
+.sim-obj2{position:absolute;font-size:1.6rem;bottom:22px;transition:left 0.05s linear;transform:translateX(-50%);user-select:none;filter:drop-shadow(0 0 8px rgba(79,142,247,0.5));}
+.sim-start-marker{position:absolute;bottom:8px;width:1px;background:var(--accent3);opacity:0.4;}
+.sim-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.sim-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+.sim-stat-v{font-family:'DM Mono',monospace;font-size:1.28rem;font-weight:500;color:var(--ink);}
+.sim-stat-l{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-top:3px;}
+.sim-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-sim{font-family:Arial,sans-serif;font-size:0.9rem;font-weight:700;padding:9px 20px;border-radius:9px;border:none;cursor:pointer;transition:all 0.2s;}
+.btn-sim.start{background:var(--accent4);color:#0a0a0f;}
+.btn-sim.start:hover{background:#a855f7;}
+.btn-sim.stop{background:var(--accent);color:#0a0a0f;}
+.btn-sim.stop:hover{background:#d4b020;}
+.btn-sim.reset{background:var(--surface);color:var(--ink);border:1px solid var(--border);}
+.btn-sim.reset:hover{background:var(--bg2);}
+.sim-mode-btns{display:flex;gap:8px;margin-bottom:16px;}
+.sim-mode{font-family:'DM Mono',monospace;font-size:0.75rem;padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;transition:all 0.2s;}
+.sim-mode.active{background:var(--accent4);color:#0a0a0f;border-color:var(--accent4);}
+.sim-chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:14px;}
+.sim-chart-title{font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+#simCanvas{width:100%;height:130px;}
+
+/* EXERCISES */
+.ex-bloque{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 10px;padding:6px 0;border-bottom:2px solid var(--border);}
+.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.ex-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.ex-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;}
+.ex-card.easy::before{background:var(--accent3);}.ex-card.medium::before{background:var(--accent2);}.ex-card.hard::before{background:var(--accent4);}
+.ex-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.3);}
+.ex-num{font-family:Arial,sans-serif;font-size:0.78rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:9px;}
+.ex-title{font-family:Arial,sans-serif;font-size:1.06rem;font-weight:700;color:var(--ink);margin-bottom:5px;line-height:1.3;}
+.ex-sub{font-size:0.78rem;color:var(--ink3);font-style:italic;}
+.ex-diff{margin-top:12px;display:inline-block;font-family:Arial,sans-serif;font-size:0.72rem;padding:3px 7px;border-radius:5px;text-transform:uppercase;}
+.ex-card.easy .ex-diff{background:rgba(22,128,60,0.1);color:var(--accent3);}
+.ex-card.medium .ex-diff{background:rgba(37,99,168,0.1);color:var(--accent2);}
+.ex-card.hard .ex-diff{background:rgba(192,132,252,0.1);color:var(--accent4);}
+
+/* CHAT MODAL */
+.chat-ov{display:none;position:fixed;inset:0;background:rgba(10,10,15,0.65);z-index:200;backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:16px;}
+.chat-ov.open{display:flex;}
+.chat-modal{background:var(--surface);border:1px solid var(--border);border-radius:22px 22px 14px 14px;width:100%;max-width:660px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 -8px 48px rgba(0,0,0,0.4);animation:up 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes up{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.ch{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;}
+.bot-av{width:40px;height:40px;background:var(--accent4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.ch-title{font-family:Arial,sans-serif;font-size:1.08rem;font-weight:700;color:var(--ink);}
+.ch-sub{font-size:0.78rem;color:var(--ink3);font-style:italic;margin-top:2px;}
+.ch-enunciado{padding:12px 20px;background:rgba(192,132,252,0.06);border-bottom:1px solid var(--border);}
+.ch-enunciado-label{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--accent4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
+.ch-enunciado-text{font-family:Arial,sans-serif;font-size:0.9rem;color:var(--ink);line-height:1.6;}
+.ch-enunciado-hint{font-family:'DM Mono',monospace;font-size:0.74rem;color:var(--ink3);margin-top:6px;}
+.ch-enunciado-hint span{color:var(--accent3);}
+.ch-close{margin-left:auto;background:var(--bg2);border:1px solid var(--border);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink3);transition:all 0.15s;flex-shrink:0;}
+.ch-close:hover{background:var(--border);color:var(--ink);}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:8px;animation:mi 0.2s ease-out;}
+@keyframes mi{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.mv{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;margin-top:2px;}
+.mv.bot{background:var(--accent4);}.mv.uv{background:var(--bg2);border:1px solid var(--border);}
+.mb{max-width:75%;padding:10px 14px;border-radius:14px;font-size:1.03rem;line-height:1.65;font-family:Arial,sans-serif;}
+.msg.bot .mb{background:var(--bg2);border:1px solid var(--border);border-top-left-radius:3px;color:var(--ink);}
+.msg.user .mb{background:var(--ink);color:var(--bg);border-top-right-radius:3px;}
+.td-wrap{display:flex;gap:8px;animation:mi 0.2s ease-out;}
+.td-dots{background:var(--bg2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:3px;padding:12px 16px;display:flex;gap:4px;align-items:center;}
+.td{width:5px;height:5px;background:var(--ink3);border-radius:50%;animation:bounce 1.2s infinite;}
+.td:nth-child(2){animation-delay:0.2s;}.td:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
+.chat-in{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;}
+.ci{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-family:Arial,sans-serif;font-size:1.06rem;color:var(--ink);outline:none;resize:none;min-height:40px;max-height:96px;transition:border-color 0.2s;}
+.ci:focus{border-color:var(--accent4);}.ci::placeholder{color:var(--ink3);font-style:italic;}
+.cs{width:40px;height:40px;background:var(--accent4);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.cs:hover{background:#a855f7;}.cs:disabled{background:var(--border);cursor:not-allowed;}
+.cs svg{width:15px;height:15px;fill:white;}
+
+/* GAME */
+.sboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.sb{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.sb-v{font-family:'Syne',sans-serif;font-size:2.16rem;font-weight:800;color:var(--ink);line-height:1;margin-bottom:3px;}
+.sb-l{font-family:Arial,sans-serif;font-size:0.74rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;}
+.tr-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+.tr{position:relative;width:80px;height:80px;}
+.tr svg{transform:rotate(-90deg);width:80px;height:80px;}
+.tr circle{fill:none;stroke-width:6;stroke-linecap:round;}
+.tr-track{stroke:var(--border);}.tr-fill{stroke:var(--accent2);stroke-dasharray:220;stroke-dashoffset:0;transition:stroke-dashoffset 0.1s linear,stroke 0.3s;}
+.tr-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.68rem;font-weight:800;color:var(--ink);}
+.qcard{background:var(--surface);border:2px solid var(--border);border-radius:18px;padding:28px;margin-bottom:20px;transition:border-color 0.3s;min-height:140px;display:flex;flex-direction:column;justify-content:center;}
+.qcard.correct{border-color:var(--accent3);background:rgba(62,207,142,0.04);}
+.qcard.wrong{border-color:var(--accent4);background:rgba(192,132,252,0.04);}
+.qcat{font-family:Arial,sans-serif;font-size:0.74rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+.qtxt{font-family:Arial,sans-serif;font-size:1.44rem;font-weight:700;color:var(--ink);line-height:1.3;}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.qopt{font-family:Arial,sans-serif;font-size:1.02rem;font-weight:500;padding:12px 14px;background:var(--bg2);border:2px solid var(--border);border-radius:11px;cursor:pointer;transition:all 0.15s;color:var(--ink);text-align:center;}
+.qopt:hover:not(:disabled){border-color:var(--accent4);transform:translateY(-1px);}
+.qopt.correct{background:rgba(62,207,142,0.1);border-color:var(--accent3);color:var(--accent3);}
+.qopt.wrong{background:rgba(192,132,252,0.1);border-color:var(--accent4);color:var(--accent4);}
+.qopt:disabled{cursor:not-allowed;}
+.fb{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-size:1.02rem;font-weight:700;margin-bottom:14px;transition:all 0.3s;opacity:0;}
+.fb.show{opacity:1;}
+.fb.correct{background:rgba(62,207,142,0.1);color:var(--accent3);}
+.fb.wrong{background:rgba(192,132,252,0.1);color:var(--accent4);}
+.gs,.ge{text-align:center;padding:40px 20px;}
+.gs h3,.ge h3{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:10px;}
+.gs p,.ge p{color:var(--ink2);margin-bottom:24px;font-size:0.9rem;line-height:1.6;}
+.ge .fs{font-family:'Syne',sans-serif;font-size:3.6rem;font-weight:800;color:var(--accent4);display:block;margin:14px 0;}
+.btn-g{font-family:Arial,sans-serif;font-size:1.06rem;font-weight:700;padding:12px 36px;background:var(--accent4);color:#0a0a0f;border:none;border-radius:11px;cursor:pointer;transition:all 0.2s;}
+.btn-g:hover{background:#a855f7;transform:translateY(-2px);}
+.stars{font-size:1.8rem;letter-spacing:3px;margin:10px 0;}
+.rank-sec{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;}
+.rank-title{font-family:Arial,sans-serif;font-size:1.14rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.rank-list{display:flex;flex-direction:column;gap:7px;}
+.ri{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:var(--bg2);}
+.ri.t1{background:rgba(232,197,71,0.07);border:1px solid rgba(232,197,71,0.2);}
+.ri.t2{background:rgba(37,99,168,0.07);border:1px solid rgba(37,99,168,0.2);}
+.ri.t3{background:rgba(62,207,142,0.07);border:1px solid rgba(62,207,142,0.2);}
+.rpos{font-family:Arial,sans-serif;font-weight:800;font-size:0.98rem;width:22px;text-align:center;flex-shrink:0;}
+.rname{font-family:Arial,sans-serif;font-size:0.98rem;font-weight:600;flex:1;}
+.rscore{font-family:Arial,sans-serif;font-size:0.94rem;color:var(--accent4);font-weight:500;}
+.rdate{font-family:Arial,sans-serif;font-size:0.74rem;color:var(--ink3);}
+.save-wrap{margin-top:20px;}
+.save-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px 12px;font-family:Arial,sans-serif;font-size:1.1rem;color:var(--ink);outline:none;margin-bottom:10px;}
+.save-wrap input:focus{border-color:var(--accent4);}
+.save-wrap input::placeholder{color:var(--ink3);font-style:italic;}
+
+@media(max-width:680px){
+  .cards,.ex-grid,.qopts{grid-template-columns:1fr;}
+  .card.full{grid-column:1;}
+  .sboard{grid-template-columns:1fr 1fr;}
+  .sim-controls{grid-template-columns:1fr;}
+  .sim-stats{grid-template-columns:1fr 1fr;}
+  .page{padding:24px 16px 60px;}
+  nav{padding:0 12px;}.nav-back{display:none;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-back">← Inicio</a>
+  <div class="nav-logo">Física<span>Lab</span></div>
+  <button class="nav-tab active" onclick="show('teoria')">📖 Teoría</button>
+  <button class="nav-tab" onclick="show('simulador')">🚀 Simulador</button>
+  <button class="nav-tab" onclick="show('ejercicios')">✏️ Ejercicios</button>
+  <button class="nav-tab" onclick="show('juego')">⚡ Juego</button>
+</nav>
+
+<!-- =================== TEORIA =================== -->
+<section class="section active" id="section-teoria">
+<div class="page">
+  <div style="margin-bottom:32px;">
+    <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">Semana 03 · Laboratorio de Ciencias Naturales</div>
+    <h2>Movimiento Rectilíneo Uniforme</h2>
+    <p class="subtitle">¿Qué pasa cuando algo se mueve a velocidad constante? Trayectoria recta, sin acelerar ni frenar.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-p" onclick="show('simulador')">🚀 Ir al simulador →</button>
+      <button class="btn-s" onclick="show('ejercicios')">✏️ Ejercicios</button>
+      <button class="btn-s" onclick="show('juego')">⚡ Jugar</button>
+    </div>
+  </div>
+
+  <div class="cards">
+    <!-- Qué es MRU -->
+    <div class="card">
+      <span class="card-icon">🚆</span>
+      <div class="card-title">¿Qué es el MRU?</div>
+      <div class="card-body">
+        Es un movimiento en <strong>línea recta</strong> donde la velocidad <strong>no cambia en ningún momento</strong>. Mismo módulo, misma dirección, mismo sentido.<br><br>
+        La fuerza neta que actúa sobre el objeto es <strong>cero</strong>. Sin fuerza neta → sin aceleración → velocidad constante.
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-family:'DM Mono',monospace;font-size:0.72rem;padding:4px 10px;border-radius:6px;background:rgba(62,207,142,0.1);color:var(--accent3);border:1px solid rgba(62,207,142,0.2);">✓ Trayectoria recta</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.72rem;padding:4px 10px;border-radius:6px;background:rgba(62,207,142,0.1);color:var(--accent3);border:1px solid rgba(62,207,142,0.2);">✓ v = cte</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.72rem;padding:4px 10px;border-radius:6px;background:rgba(62,207,142,0.1);color:var(--accent3);border:1px solid rgba(62,207,142,0.2);">✓ a = 0</span>
+          <span style="font-family:'DM Mono',monospace;font-size:0.72rem;padding:4px 10px;border-radius:6px;background:rgba(62,207,142,0.1);color:var(--accent3);border:1px solid rgba(62,207,142,0.2);">✓ F neta = 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posición, Desplazamiento, Distancia -->
+    <div class="card">
+      <span class="card-icon">📍</span>
+      <div class="card-title">Posición, Desplazamiento y Distancia</div>
+      <div class="card-body">Tres conceptos que se confunden mucho:</div>
+      <table class="ct" style="margin-top:12px;">
+        <thead><tr><th>Concepto</th><th>Símbolo</th><th>¿Negativo?</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">Posición</span></td><td>x</td><td class="si2">Sí</td></tr>
+          <tr><td><span class="tag">Desplazamiento</span></td><td>Δx = x − x₀</td><td class="si2">Sí</td></tr>
+          <tr><td><span class="tag">Distancia</span></td><td>d</td><td class="no">No (≥ 0)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ecuaciones -->
+    <div class="card full">
+      <span class="card-icon">📐</span>
+      <div class="card-title">Ecuaciones Fundamentales del MRU</div>
+      <div class="card-body">Estas cuatro expresiones describen completamente el movimiento uniforme:</div>
+      <div class="eq-box">
+        <div class="eq-label">Ecuaciones del MRU</div>
+        <div class="eq-row"><span class="hl">x = x₀ + v · t</span> <small>— posición en el instante t (ecuación horaria)</small></div>
+        <div class="eq-row"><span class="hl">v = Δx / t = (x − x₀) / t</span> <small>— velocidad media (constante en MRU)</small></div>
+        <div class="eq-row"><span class="ok">a = 0</span> <small>— la aceleración es siempre cero</small></div>
+        <div class="eq-row"><span class="hl">t = Δx / v</span> <small>— tiempo (despejando de la ecuación horaria)</small></div>
+      </div>
+      <div class="clave"><span class="clave-icon">💡</span><span class="clave-txt">La ecuación <strong>x = x₀ + v·t</strong> es la más importante. Por cada segundo que pasa, la posición aumenta exactamente <strong>v metros</strong>. Es una función lineal en t.</span></div>
+    </div>
+
+    <!-- Gráficos x-t -->
+    <div class="card">
+      <span class="card-icon">📈</span>
+      <div class="card-title">Gráfico posición-tiempo (x-t)</div>
+      <div class="card-body">En el MRU la gráfica x-t es siempre una <strong>recta</strong>. La pendiente de esa recta es exactamente la velocidad:</div>
+      <div class="eq-box" style="margin-top:12px;">
+        <div class="eq-label">Pendiente del gráfico x-t</div>
+        <div class="eq-row"><span class="hl">pendiente = Δx / Δt = v</span></div>
+      </div>
+      <div class="card-body" style="margin-top:12px;">
+        · Recta más inclinada → mayor velocidad<br>
+        · Recta horizontal → objeto en reposo (v = 0)<br>
+        · Pendiente negativa → objeto se acerca al origen
+      </div>
+    </div>
+
+    <!-- Gráfico v-t -->
+    <div class="card">
+      <span class="card-icon">📉</span>
+      <div class="card-title">Gráfico velocidad-tiempo (v-t)</div>
+      <div class="card-body">En el MRU la gráfica v-t es una <strong>recta horizontal</strong>, porque la velocidad no cambia.</div>
+      <div class="eq-box" style="margin-top:12px;">
+        <div class="eq-label">Área bajo la curva v-t</div>
+        <div class="eq-row"><span class="hl">área = v · Δt = Δx</span> <small>— el desplazamiento</small></div>
+      </div>
+      <div class="card-body" style="margin-top:12px;">
+        El área bajo la recta horizontal entre dos instantes es igual al <strong>desplazamiento</strong> recorrido en ese intervalo.
+      </div>
+    </div>
+
+    <!-- Ejemplo resuelto tren -->
+    <div class="card full">
+      <span class="card-icon">🎢</span>
+      <div class="card-title">Ejemplo Resuelto — Tren fantasma del parque</div>
+      <div class="card-body">El tren sale desde x₀ = 0 a v = 6 m/s. Construimos la tabla posición-tiempo:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;">
+        <div>
+          <table class="ct">
+            <thead><tr><th>t (s)</th><th>Cálculo</th><th>x (m)</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0 + 6×0</td><td style="color:var(--accent4);">0 m</td></tr>
+              <tr><td>5</td><td>0 + 6×5</td><td style="color:var(--accent4);">30 m</td></tr>
+              <tr><td>10</td><td>0 + 6×10</td><td style="color:var(--accent4);">60 m</td></tr>
+              <tr><td>15</td><td>0 + 6×15</td><td style="color:var(--accent4);">90 m</td></tr>
+              <tr><td>20</td><td>0 + 6×20</td><td style="color:var(--accent4);">120 m</td></tr>
+            </tbody>
+          </table>
+          <div class="clave" style="margin-top:12px;"><span class="clave-icon">💡</span><span class="clave-txt">Cada 5 s el tren avanza exactamente 30 m. Eso es la velocidad constante en acción.</span></div>
+        </div>
+        <div class="graph-card">
+          <div class="graph-title">FIG. — Gráfico x-t del tren fantasma</div>
+          <canvas id="chartTren" style="width:100%;height:160px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Encuentro de dos vehículos -->
+    <div class="card full">
+      <span class="card-icon">🚗</span>
+      <div class="card-title">Ejemplo Resuelto — Encuentro de dos trenes</div>
+      <div class="card-body">El tren A sale desde x = 0 a 8 m/s. Al mismo tiempo, el tren B sale desde x = 200 m hacia la izquierda a 12 m/s. ¿Dónde y cuándo se encuentran?</div>
+      <div class="solved" style="margin-top:14px;">
+        <div class="solved-title">Planteo</div>
+        <div class="solved-body">
+          x<sub>A</sub> = 0 + 8·t = <span class="hl">8t</span><br>
+          x<sub>B</sub> = 200 − 12·t<br><br>
+          Se encuentran cuando x<sub>A</sub> = x<sub>B</sub>:<br>
+          8t = 200 − 12t<br>
+          20t = 200<br>
+          <span class="ans">t = 10 s</span><br>
+          <span class="ans">x = 8 × 10 = 80 m</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:8px;">
+    <button class="btn-p" onclick="show('simulador')">🚀 ¡Ahora probalo en el simulador! →</button>
+  </div>
+</div>
+</section>
+
+<!-- =================== SIMULADOR =================== -->
+<section class="section" id="section-simulador">
+<div class="page">
+  <div style="margin-bottom:28px;">
+    <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;">Semana 03 · Simulador MRU</div>
+    <h2>Simulador Interactivo</h2>
+    <p class="subtitle">Ajustá posición inicial y velocidad, corré la simulación y observá cómo se generan los gráficos x-t y v-t en tiempo real.</p>
+  </div>
+
+  <!-- Selector de modo -->
+  <div style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;">Modo</div>
+  <div class="sim-mode-btns">
+    <button class="sim-mode active" onclick="setMode('single')">1 objeto</button>
+    <button class="sim-mode" onclick="setMode('meeting')">Encuentro de trenes</button>
+  </div>
+
+  <div class="sim-wrap">
+    <div class="sim-title">🚆 Pista MRU</div>
+    <div class="sim-subtitle" id="simSubtitle">Configurá la velocidad y la posición inicial y observá el movimiento</div>
+
+    <!-- Controles modo single -->
+    <div id="ctrlSingle" class="sim-controls">
+      <div class="sim-ctrl">
+        <label>Posición inicial (m)</label>
+        <input type="range" id="sx0" min="0" max="500" value="0" oninput="updateSim()">
+        <span class="val" id="sx0v">0 m</span>
+      </div>
+      <div class="sim-ctrl">
+        <label>Velocidad (m/s)</label>
+        <input type="range" id="sv" min="-30" max="30" value="10" oninput="updateSim()">
+        <span class="val" id="svv">10 m/s</span>
+      </div>
+      <div class="sim-ctrl">
+        <label>Duración (s)</label>
+        <input type="range" id="sdur" min="5" max="60" value="20" oninput="updateSim()">
+        <span class="val" id="sdurv">20 s</span>
+      </div>
+    </div>
+
+    <!-- Controles modo meeting -->
+    <div id="ctrlMeeting" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="background:rgba(79,142,247,0.06);border:1px solid rgba(79,142,247,0.2);border-radius:12px;padding:16px;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">🚆 Tren A</div>
+          <div class="sim-ctrl">
+            <label>Posición inicial (m)</label>
+            <input type="range" id="ax0" min="0" max="400" value="0" oninput="updateMeeting()">
+            <span class="val" id="ax0v">0 m</span>
+          </div>
+          <div class="sim-ctrl" style="margin-top:12px;">
+            <label>Velocidad (m/s)</label>
+            <input type="range" id="av" min="-30" max="30" value="8" oninput="updateMeeting()">
+            <span class="val" id="avv">8 m/s</span>
+          </div>
+        </div>
+        <div style="background:rgba(232,197,71,0.06);border:1px solid rgba(232,197,71,0.2);border-radius:12px;padding:16px;">
+          <div style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;">🚂 Tren B</div>
+          <div class="sim-ctrl">
+            <label>Posición inicial (m)</label>
+            <input type="range" id="bx0" min="0" max="400" value="200" oninput="updateMeeting()">
+            <span class="val" id="bx0v">200 m</span>
+          </div>
+          <div class="sim-ctrl" style="margin-top:12px;">
+            <label>Velocidad (m/s)</label>
+            <input type="range" id="bv" min="-30" max="30" value="-12" oninput="updateMeeting()">
+            <span class="val" id="bvv">-12 m/s</span>
+          </div>
+        </div>
+      </div>
+      <div id="meetingInfo" style="font-family:'DM Mono',monospace;font-size:0.85rem;color:var(--ink2);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;"></div>
+    </div>
+
+    <!-- Track de animación -->
+    <div class="sim-track" id="simTrack">
+      <div class="sim-road"></div>
+      <div class="sim-line"></div>
+      <div class="sim-start-marker" id="startMarker" style="left:5%;height:50px;bottom:8px;"></div>
+      <div class="sim-obj" id="simObj" style="left:5%;">🚆</div>
+      <div class="sim-obj2" id="simObj2" style="left:85%;display:none;">🚂</div>
+    </div>
+
+    <!-- Stats en tiempo real -->
+    <div class="sim-stats">
+      <div class="sim-stat"><div class="sim-stat-v" id="statT">0.0 s</div><div class="sim-stat-l">Tiempo</div></div>
+      <div class="sim-stat"><div class="sim-stat-v" id="statX">— m</div><div class="sim-stat-l">Posición</div></div>
+      <div class="sim-stat"><div class="sim-stat-v" id="statDx">— m</div><div class="sim-stat-l">Desplaz. Δx</div></div>
+      <div class="sim-stat"><div class="sim-stat-v" id="statV">— m/s</div><div class="sim-stat-l">Velocidad</div></div>
+    </div>
+
+    <div class="sim-btns">
+      <button class="btn-sim start" id="btnStart" onclick="startSim()">▶ Iniciar</button>
+      <button class="btn-sim stop" id="btnStop" onclick="stopSim()" style="display:none;">⏹ Detener</button>
+      <button class="btn-sim reset" onclick="resetSim()">↺ Reiniciar</button>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="sim-chart-wrap" style="margin-top:20px;">
+      <div class="sim-chart-title">Gráfico x-t (posición-tiempo)</div>
+      <canvas id="simXTChart" style="width:100%;height:130px;"></canvas>
+    </div>
+    <div class="sim-chart-wrap">
+      <div class="sim-chart-title">Gráfico v-t (velocidad-tiempo)</div>
+      <canvas id="simVTChart" style="width:100%;height:90px;"></canvas>
+    </div>
+  </div>
+
+  <div style="text-align:center;">
+    <button class="btn-p" onclick="show('ejercicios')">✏️ Ir a los ejercicios →</button>
+  </div>
+</div>
+</section>
+
+<!-- =================== EJERCICIOS =================== -->
+<section class="section" id="section-ejercicios">
+<div class="page">
+  <h2>Ejercicios con Tutor IA</h2>
+  <p class="subtitle">Elegí un ejercicio. NewtonBot te guía con preguntas para que llegues a la solución vos mismo/a.</p>
+
+  <div class="ex-bloque">Bloque A — Básicos ●○○</div>
+  <div class="ex-grid">
+    <div class="ex-card easy" onclick="openChat(0)">
+      <div class="ex-num">Ejercicio 01</div>
+      <div class="ex-title">Velocidad del tren fantasma</div>
+      <div class="ex-sub">🎢 Tren fantasma del parque</div>
+      <div class="ex-diff">● Básico</div>
+    </div>
+    <div class="ex-card easy" onclick="openChat(1)">
+      <div class="ex-num">Ejercicio 02</div>
+      <div class="ex-title">Distancia del go-kart</div>
+      <div class="ex-sub">🏎️ Pista de go-karts</div>
+      <div class="ex-diff">● Básico</div>
+    </div>
+    <div class="ex-card easy" onclick="openChat(2)">
+      <div class="ex-num">Ejercicio 03</div>
+      <div class="ex-title">Tiempo del auto de choque</div>
+      <div class="ex-sub">💥 Autos de choque</div>
+      <div class="ex-diff">● Básico</div>
+    </div>
+  </div>
+
+  <div class="ex-bloque" style="margin-top:28px;">Bloque B — Intermedios ●●○</div>
+  <div class="ex-grid">
+    <div class="ex-card medium" onclick="openChat(3)">
+      <div class="ex-num">Ejercicio 04</div>
+      <div class="ex-title">Ecuación horaria del funicular</div>
+      <div class="ex-sub">🚡 Funicular del parque</div>
+      <div class="ex-diff">●● Intermedio</div>
+    </div>
+    <div class="ex-card medium" onclick="openChat(4)">
+      <div class="ex-num">Ejercicio 05</div>
+      <div class="ex-title">Velocidad desde dos posiciones</div>
+      <div class="ex-sub">📡 Sensor de posición</div>
+      <div class="ex-diff">●● Intermedio</div>
+    </div>
+    <div class="ex-card medium" onclick="openChat(5)">
+      <div class="ex-num">Ejercicio 06</div>
+      <div class="ex-title">Dos atracciones en sentidos opuestos</div>
+      <div class="ex-sub">🚆🚂 Dos trenes del parque</div>
+      <div class="ex-diff">●● Intermedio</div>
+    </div>
+    <div class="ex-card medium" onclick="openChat(6)">
+      <div class="ex-num">Ejercicio 07</div>
+      <div class="ex-title">Lectura de gráfico x-t</div>
+      <div class="ex-sub">📊 Análisis de datos</div>
+      <div class="ex-diff">●● Intermedio</div>
+    </div>
+  </div>
+
+  <div class="ex-bloque" style="margin-top:28px;">Bloque C — Desafío ●●●</div>
+  <div class="ex-grid">
+    <div class="ex-card hard" onclick="openChat(7)">
+      <div class="ex-num">Ejercicio 08</div>
+      <div class="ex-title">¿Cuándo te alcanza?</div>
+      <div class="ex-sub">🏁 Carrera de carros</div>
+      <div class="ex-diff">●●● Desafío</div>
+    </div>
+    <div class="ex-card hard" onclick="openChat(8)">
+      <div class="ex-num">Ejercicio 09</div>
+      <div class="ex-title">Encuentro de trenes</div>
+      <div class="ex-sub">🚉 Sistema de trenes</div>
+      <div class="ex-diff">●●● Desafío</div>
+    </div>
+    <div class="ex-card hard" onclick="openChat(9)">
+      <div class="ex-num">Ejercicio 10</div>
+      <div class="ex-title">El ingeniero del parque</div>
+      <div class="ex-sub">⚙️ Ingeniería del tren fantasma</div>
+      <div class="ex-diff">●●● Desafío</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- CHAT MODAL -->
+<div class="chat-ov" id="chatOv" onclick="closeIfOut(event)">
+  <div class="chat-modal">
+    <div class="ch">
+      <div class="bot-av">🤖</div>
+      <div><div class="ch-title" id="cmT">NewtonBot</div><div class="ch-sub" id="cmS">—</div></div>
+      <div class="ch-close" onclick="closeChat()">✕</div>
+    </div>
+    <div class="ch-enunciado" id="cmEnunciado">
+      <div class="ch-enunciado-label">📋 Enunciado</div>
+      <div class="ch-enunciado-text" id="cmEnunciadoText">—</div>
+      <div class="ch-enunciado-hint">💡 Pista: <span id="cmHintText">—</span></div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-in">
+      <textarea class="ci" id="ci" placeholder="Escribí tu respuesta o pregunta…" rows="1" onkeydown="ck(event)" oninput="ar(this)"></textarea>
+      <button class="cs" id="cs" onclick="sendMsg()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== JUEGO =================== -->
+<section class="section" id="section-juego">
+<div class="page" style="max-width:760px;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <h2>⚡ MRU Contrarreloj</h2>
+    <p class="subtitle">Respondé preguntas sobre MRU antes de que se acabe el tiempo. ¡Ponete a prueba!</p>
+  </div>
+
+  <div id="gStart">
+    <div style="text-align:center;padding:24px 0 32px;">
+      <div style="font-size:2.5rem;margin-bottom:14px;">🚆</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:10px;">¿Estás listo/a?</h3>
+      <p style="color:var(--ink2);margin-bottom:24px;font-size:0.9rem;"><strong>30 segundos</strong> por pregunta. MRU, ecuaciones, gráficos y más.</p>
+      <button class="btn-g" onclick="startGame()">¡Jugar ahora!</button>
+    </div>
+    <div class="rank-sec">
+      <div class="rank-title">🏆 Ranking Global — MRU</div>
+      <div class="rank-list" id="rl"><div style="color:var(--ink3);font-size:0.83rem;text-align:center;padding:14px;">Cargando…</div></div>
+    </div>
+  </div>
+
+  <div id="gScreen" style="display:none">
+    <div class="sboard">
+      <div class="sb"><div class="sb-v" id="sv">0</div><div class="sb-l">puntos</div></div>
+      <div class="sb"><div class="sb-v" id="qn">1/12</div><div class="sb-l">pregunta</div></div>
+      <div class="sb"><div class="sb-v" id="stk">0</div><div class="sb-l">racha 🔥</div></div>
+    </div>
+    <div class="tr-wrap"><div class="tr">
+      <svg viewBox="0 0 80 80"><circle class="tr-track" cx="40" cy="40" r="34"/><circle class="tr-fill" id="trc" cx="40" cy="40" r="34"/></svg>
+      <div class="tr-txt" id="trt">30</div>
+    </div></div>
+    <div class="qcard" id="qc">
+      <div class="qcat" id="qcat">—</div>
+      <div class="qtxt" id="qtxt">—</div>
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="qopts" id="qopts"></div>
+  </div>
+
+  <div id="gEnd" style="display:none">
+    <div class="ge">
+      <h3>¡Terminaste!</h3>
+      <span class="fs" id="fsc">0 pts</span>
+      <div class="stars" id="strs">⭐</div>
+      <p id="emsg"></p>
+      <div class="save-wrap">
+        <input type="text" id="pname" placeholder="Tu nombre o apodo…" maxlength="30">
+        <button class="btn-g" id="sbtn" onclick="saveScore()">Guardar en ranking 🏆</button>
+      </div>
+      <br>
+      <button class="btn-s" onclick="restartGame()">Jugar de nuevo</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<script>
+// ===== NAV =====
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  const tabs={teoria:0,simulador:1,ejercicios:2,juego:3};
+  document.querySelectorAll('.nav-tab')[tabs[id]].classList.add('active');
+  if(id==='juego')loadRanking();
+  if(id==='teoria')drawTrenChart();
+}
+
+// ===== MINI CHART (teoría) =====
+function drawTrenChart(){
+  const canvas=document.getElementById('chartTren');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2;canvas.height=320;
+  ctx.scale(2,2);
+  const w=canvas.offsetWidth/2,h=160;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#12121a';ctx.fillRect(0,0,w,h);
+  const pts=[{t:0,x:0},{t:5,x:30},{t:10,x:60},{t:15,x:90},{t:20,x:120}];
+  const px=v=>20+(w-40)*v/20;
+  const py=v=>h-20-(h-36)*v/120;
+  ctx.strokeStyle='#1e1e2e';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const x=px(i*5);ctx.beginPath();ctx.moveTo(x,10);ctx.lineTo(x,h-10);ctx.stroke();
+    const y=py(i*30);ctx.beginPath();ctx.moveTo(14,y);ctx.lineTo(w-6,y);ctx.stroke();
+    ctx.fillStyle='#6b6880';ctx.font='9px DM Mono,monospace';
+    ctx.fillText(i*5+'s',x-6,h-4);
+    ctx.fillText(i*30+'m',2,y+3);
+  }
+  ctx.strokeStyle='#c084fc';ctx.lineWidth=2;ctx.beginPath();
+  pts.forEach((p,i)=>{const x=px(p.t),y=py(p.x);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(px(p.t),py(p.x),4,0,Math.PI*2);ctx.fillStyle='#c084fc';ctx.fill();});
+  ctx.fillStyle='#c084fc';ctx.font='bold 10px Syne,sans-serif';
+  ctx.fillText('pendiente = 6 m/s',px(8),py(60)-10);
+}
+
+// ===== SIMULATOR =====
+let simMode='single',simRunning=false,simT=0,simRaf=null,simLastTime=null;
+let xtData=[],vtData=[];
+const TRK_MIN=0,TRK_MAX=800;
+
+function setMode(m){
+  simMode=m;
+  document.querySelectorAll('.sim-mode').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('ctrlSingle').style.display=m==='single'?'grid':'none';
+  document.getElementById('ctrlMeeting').style.display=m==='meeting'?'block':'none';
+  document.getElementById('simObj2').style.display=m==='meeting'?'block':'none';
+  resetSim();
+  if(m==='meeting')updateMeeting();
+}
+
+function getSingle(){
+  return{x0:parseFloat(document.getElementById('sx0').value),v:parseFloat(document.getElementById('sv').value),dur:parseFloat(document.getElementById('sdur').value)};
+}
+function getMeeting(){
+  return{
+    ax0:parseFloat(document.getElementById('ax0').value),av:parseFloat(document.getElementById('av').value),
+    bx0:parseFloat(document.getElementById('bx0').value),bv:parseFloat(document.getElementById('bv').value)
+  };
+}
+
+function updateSim(){
+  const{x0,v,dur}=getSingle();
+  document.getElementById('sx0v').textContent=x0+' m';
+  document.getElementById('svv').textContent=v+' m/s';
+  document.getElementById('sdurv').textContent=dur+' s';
+  document.getElementById('statX').textContent=x0.toFixed(1)+' m';
+  document.getElementById('statV').textContent=v.toFixed(1)+' m/s';
+  document.getElementById('statDx').textContent='0 m';
+  positionObj(x0,null);
+}
+function updateMeeting(){
+  const m=getMeeting();
+  document.getElementById('ax0v').textContent=m.ax0+' m';
+  document.getElementById('avv').textContent=m.av+' m/s';
+  document.getElementById('bx0v').textContent=m.bx0+' m';
+  document.getElementById('bvv').textContent=m.bv+' m/s';
+  positionObj(m.ax0,m.bx0);
+  const dv=m.av-m.bv;
+  if(dv!==0){
+    const tm=(m.bx0-m.ax0)/dv;
+    const xm=m.ax0+m.av*tm;
+    if(tm>0){
+      document.getElementById('meetingInfo').innerHTML=`✓ Se encuentran en t = <strong style="color:var(--accent4)">${tm.toFixed(2)} s</strong> en x = <strong style="color:var(--accent4)">${xm.toFixed(2)} m</strong>`;
+    }else{
+      document.getElementById('meetingInfo').textContent='Los trenes no se encuentran con esta configuración.';
+    }
+  }else{
+    document.getElementById('meetingInfo').textContent=m.ax0===m.bx0?'Los trenes están en el mismo lugar.':'Los trenes nunca se encuentran (velocidades iguales).';
+  }
+}
+
+function positionObj(xA,xB){
+  const range=TRK_MAX-TRK_MIN;
+  const pctA=Math.max(2,Math.min(96,(xA-TRK_MIN)/range*92+4));
+  document.getElementById('simObj').style.left=pctA+'%';
+  if(xB!==null){
+    const pctB=Math.max(2,Math.min(96,(xB-TRK_MIN)/range*92+4));
+    document.getElementById('simObj2').style.left=pctB+'%';
+  }
+}
+
+function startSim(){
+  if(simRunning)return;
+  simRunning=true;simT=0;xtData=[];vtData=[];simLastTime=null;
+  document.getElementById('btnStart').style.display='none';
+  document.getElementById('btnStop').style.display='inline-flex';
+  drawXTChart();drawVTChart();
+  simRaf=requestAnimationFrame(simStep);
+}
+function stopSim(){
+  simRunning=false;cancelAnimationFrame(simRaf);
+  document.getElementById('btnStart').style.display='inline-flex';
+  document.getElementById('btnStop').style.display='none';
+}
+function resetSim(){
+  stopSim();simT=0;xtData=[];vtData=[];
+  document.getElementById('statT').textContent='0.0 s';
+  if(simMode==='single'){
+    const{x0,v}=getSingle();
+    document.getElementById('statX').textContent=x0.toFixed(1)+' m';
+    document.getElementById('statDx').textContent='0 m';
+    document.getElementById('statV').textContent=v.toFixed(1)+' m/s';
+    positionObj(x0,null);
+  }else{
+    const m=getMeeting();
+    positionObj(m.ax0,m.bx0);
+  }
+  drawXTChart();drawVTChart();
+}
+
+function simStep(ts){
+  if(!simLastTime){simLastTime=ts;}
+  const dt=(ts-simLastTime)/1000;simLastTime=ts;
+  simT+=dt;
+  if(simMode==='single'){
+    const{x0,v,dur}=getSingle();
+    const x=x0+v*simT;
+    const dx=x-x0;
+    document.getElementById('statT').textContent=simT.toFixed(1)+' s';
+    document.getElementById('statX').textContent=x.toFixed(1)+' m';
+    document.getElementById('statDx').textContent=dx.toFixed(1)+' m';
+    document.getElementById('statV').textContent=v.toFixed(1)+' m/s';
+    positionObj(Math.max(TRK_MIN,Math.min(TRK_MAX,x)),null);
+    xtData.push({t:simT,x});vtData.push({t:simT,v});
+    if(simT>=dur){stopSim();return;}
+  }else{
+    const m=getMeeting();
+    const xA=m.ax0+m.av*simT;
+    const xB=m.bx0+m.bv*simT;
+    document.getElementById('statT').textContent=simT.toFixed(1)+' s';
+    document.getElementById('statX').textContent='A:'+xA.toFixed(0)+'m B:'+xB.toFixed(0)+'m';
+    document.getElementById('statDx').textContent=(xA-m.ax0).toFixed(1)+' m';
+    document.getElementById('statV').textContent=m.av+'/'+m.bv+' m/s';
+    positionObj(Math.max(TRK_MIN,Math.min(TRK_MAX,xA)),Math.max(TRK_MIN,Math.min(TRK_MAX,xB)));
+    xtData.push({t:simT,x:xA,x2:xB});vtData.push({t:simT,v:m.av,v2:m.bv});
+    if(simT>=40){stopSim();return;}
+  }
+  drawXTChart();drawVTChart();
+  simRaf=requestAnimationFrame(simStep);
+}
+
+function drawXTChart(){
+  const canvas=document.getElementById('simXTChart');
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth,H=130;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.fillStyle='#0d0d16';ctx.fillRect(0,0,W,H);
+  const pad={l:40,r:10,t:8,b:24};
+  const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  ctx.strokeStyle='#1e1e2e';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*i/4;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+  }
+  ctx.fillStyle='#6b6880';ctx.font=`${9*dpr/dpr}px DM Mono,monospace`;ctx.textAlign='right';
+  if(xtData.length<2){
+    ctx.fillStyle='#6b6880';ctx.textAlign='center';
+    ctx.fillText('Iniciá la simulación',W/2,H/2);return;
+  }
+  const maxT=xtData[xtData.length-1].t||1;
+  const allX=[...xtData.map(d=>d.x)];
+  if(xtData[0].x2!==undefined)allX.push(...xtData.map(d=>d.x2));
+  const minX=Math.min(...allX);const maxX=Math.max(...allX);
+  const rangeX=maxX-minX||1;
+  const tx=t=>pad.l+cw*t/maxT;
+  const ty=x=>pad.t+ch*(1-(x-minX)/rangeX);
+  for(let i=0;i<=4;i++){
+    const x=minX+rangeX*i/4;
+    const y=pad.t+ch*(1-i/4);
+    ctx.fillStyle='#6b6880';ctx.textAlign='right';
+    ctx.fillText(Math.round(x)+'m',pad.l-4,y+3);
+  }
+  ctx.strokeStyle='#c084fc';ctx.lineWidth=2;ctx.beginPath();
+  xtData.forEach((d,i)=>{const x=tx(d.t),y=ty(d.x);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  if(xtData[0].x2!==undefined){
+    ctx.strokeStyle='#e8c547';ctx.lineWidth=2;ctx.beginPath();
+    xtData.forEach((d,i)=>{const x=tx(d.t),y=ty(d.x2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();
+  }
+  ctx.fillStyle='#6b6880';ctx.textAlign='center';
+  for(let i=0;i<=4;i++){
+    const t=maxT*i/4;
+    ctx.fillText(t.toFixed(1)+'s',pad.l+cw*i/4,H-pad.b+14);
+  }
+}
+
+function drawVTChart(){
+  const canvas=document.getElementById('simVTChart');
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth,H=90;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.fillStyle='#0d0d16';ctx.fillRect(0,0,W,H);
+  const pad={l:40,r:10,t:8,b:24};
+  const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  if(vtData.length<2){
+    ctx.fillStyle='#6b6880';ctx.textAlign='center';ctx.font='9px DM Mono,monospace';
+    ctx.fillText('Iniciá la simulación',W/2,H/2);return;
+  }
+  const maxT=vtData[vtData.length-1].t||1;
+  const allV=[...vtData.map(d=>d.v)];
+  if(vtData[0].v2!==undefined)allV.push(...vtData.map(d=>d.v2));
+  const minV=Math.min(...allV)-2;const maxV=Math.max(...allV)+2;
+  const rangeV=maxV-minV||1;
+  const tx=t=>pad.l+cw*t/maxT;
+  const ty=v=>pad.t+ch*(1-(v-minV)/rangeV);
+  ctx.strokeStyle='#1e1e2e';ctx.lineWidth=1;
+  const y0=ty(0);if(y0>=pad.t&&y0<=H-pad.b){ctx.beginPath();ctx.moveTo(pad.l,y0);ctx.lineTo(W-pad.r,y0);ctx.stroke();}
+  ctx.fillStyle='#6b6880';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(vtData[0].v.toFixed(0)+'m/s',pad.l-4,ty(vtData[0].v)+3);
+  if(vtData[0].v2!==undefined)ctx.fillText(vtData[0].v2.toFixed(0),pad.l-4,ty(vtData[0].v2)+3);
+  ctx.strokeStyle='#c084fc';ctx.lineWidth=2;ctx.beginPath();
+  vtData.forEach((d,i)=>{const x=tx(d.t),y=ty(d.v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  if(vtData[0].v2!==undefined){
+    ctx.strokeStyle='#e8c547';ctx.lineWidth=2;ctx.beginPath();
+    vtData.forEach((d,i)=>{const x=tx(d.t),y=ty(d.v2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();
+  }
+  ctx.fillStyle='#6b6880';ctx.textAlign='center';
+  for(let i=0;i<=4;i++){
+    const t=maxT*i/4;
+    ctx.fillText(t.toFixed(1)+'s',pad.l+cw*i/4,H-pad.b+14);
+  }
+}
+
+updateSim();
+
+// ===== EXERCISES DATA =====
+const EXERCISES=[
+  {title:'Velocidad del tren fantasma',enunciado:'🎢 El tren fantasma recorre un circuito recto de 240 m a velocidad constante en 30 s. ¿Cuál es su velocidad?',ctx:'Ejercicio 1 — El tren fantasma recorre un circuito recto de 240 m a velocidad constante en 30 s. Calcular la velocidad. Datos: d=240m, t=30s. Respuesta: 8 m/s.',hint:'Aplicá directamente v = d / t.'},
+  {title:'Distancia del go-kart',enunciado:'🏎️ Un go-kart circula a 5 m/s constantes. ¿Qué distancia recorre en 12 s?',ctx:'Ejercicio 2 — Un go-kart circula a 5 m/s constantes. ¿Qué distancia recorre en 12 s? Datos: v=5m/s, t=12s. Respuesta: 60 m.',hint:'Usá d = v × t.'},
+  {title:'Tiempo del auto de choque',enunciado:'💥 Un auto de choque se mueve a 2,5 m/s y necesita recorrer 10 m para llegar al punto de salida. ¿Cuánto tiempo tarda?',ctx:'Ejercicio 3 — Un auto de choque se mueve a 2,5 m/s y necesita recorrer 10 m. ¿Cuánto tiempo tarda? Datos: v=2.5m/s, d=10m. Respuesta: 4 s.',hint:'Despejá t = d / v.'},
+  {title:'Ecuación horaria del funicular',enunciado:'🚡 El funicular sale desde x₀ = 5 m a una velocidad constante de v = 3 m/s.\na) ¿Cuál es su posición a los 20 s?\nb) Construí la tabla de posición para t = 0, 5, 10, 15 y 20 s.',ctx:'Ejercicio 4 — El funicular sale desde x₀=5m a v=3m/s constante. a) ¿Posición a los 20s? b) Tabla para t=0,5,10,15,20s. Respuesta: a) 65m b) 5m, 20m, 35m, 50m, 65m.',hint:'Usá x = x₀ + v·t. No olvides sumar la posición inicial.'},
+  {title:'Velocidad desde dos posiciones',enunciado:'📡 Un sensor registra que un carro pasa por x = 20 m en t = 4 s, y por x = 50 m en t = 10 s.\na) ¿El movimiento es MRU? ¿Cómo lo verificás?\nb) ¿Cuál es la velocidad del carro?',ctx:'Ejercicio 5 — Sensor registra: x=20m en t=4s, y x=50m en t=10s. a) ¿Es MRU? b) velocidad. Respuesta: a) Sí b) 5m/s.',hint:'Calculá v = Δx / Δt usando los dos puntos. Si la velocidad es constante, es MRU.'},
+  {title:'Dos atracciones en sentidos opuestos',enunciado:'🚆🚂 Dos trenes salen simultáneamente desde el mismo punto en sentidos contrarios: el tren A a 12 m/s hacia la derecha y el tren B a 8 m/s hacia la izquierda. ¿A qué distancia están entre sí después de 5 s?',ctx:'Ejercicio 6 — Dos trenes salen del mismo punto: A a 12m/s derecha, B a 8m/s izquierda. ¿Distancia entre ellos a los 5s? Respuesta: 100m.',hint:'Calculá la distancia de cada uno por separado y sumá.'},
+  {title:'Lectura de gráfico x-t',enunciado:'📊 Un gráfico x-t muestra una recta que pasa por los puntos (0 s; 10 m) y (8 s; 50 m).\na) ¿Cuál es la velocidad del objeto?\nb) ¿En qué instante llega a x = 90 m?',ctx:'Ejercicio 7 — Gráfico x-t con recta por (0s,10m) y (8s,50m). a) velocidad b) instante cuando x=90m. Respuesta: a) 5m/s b) 16s.',hint:'a) Calculá la pendiente: v=Δx/Δt. b) Usá x=x₀+v·t y despejá t.'},
+  {title:'¿Cuándo te alcanza?',enunciado:'🏁 El carro A sale desde x = 0 a 10 m/s. El carro B arranca 4 s después desde el mismo punto a 15 m/s. ¿En qué momento el carro B alcanza al carro A? ¿En qué posición ocurre el encuentro?',ctx:'Ejercicio 8 — Carro A desde x=0 a 10m/s. Carro B arranca 4s después desde x=0 a 15m/s. ¿Cuándo y dónde alcanza B a A? Respuesta: t=12s, x=120m.',hint:'El carro B arranca con t-4 segundos de tiempo. Igualá las posiciones de ambos.'},
+  {title:'Encuentro de trenes',enunciado:'🚉 El tren A sale desde x = 0 hacia la derecha a 8 m/s. Al mismo tiempo, el tren B sale desde x = 200 m hacia la izquierda a 12 m/s.\na) ¿En qué tiempo se encuentran?\nb) ¿En qué posición ocurre el encuentro?\nc) Graficá cualitativamente el gráfico x-t de ambos trenes.',ctx:'Ejercicio 9 — Tren A desde x=0 a 8m/s derecha. Tren B desde x=200m a 12m/s izquierda. ¿Tiempo y posición de encuentro? Respuesta: t=10s, x=80m.',hint:'xA=8t, xB=200-12t. Igualá para encontrar t.'},
+  {title:'El ingeniero del parque',enunciado:'⚙️ El tren fantasma recorre su circuito completo en MRU durante 8 horas diarias a 25 m/s.\na) ¿Cuántos metros recorre en un día? Expresá el resultado en notación científica.\nb) ¿Cuántos kilómetros son?\nc) Si el circuito mide 1 800 m, ¿cuántas vueltas completas da en un día?',ctx:'Ejercicio 10 — Tren fantasma en MRU 8 horas diarias a 25m/s. a)¿Metros en un día? En notación científica. b)¿Km? c)Si circuito=1800m, ¿vueltas? Respuesta: a)7.2×10⁵m b)720km c)400 vueltas.',hint:'Convertí 8 horas a segundos (×3600). Luego d=v×t.'},
+];
+
+// ===== CHAT =====
+let chatMsgs=[],chatCtx='',chatOpen=false;
+function openChat(idx){
+  const ex=EXERCISES[idx];
+  chatCtx=ex.ctx;chatMsgs=[];chatOpen=true;
+  document.getElementById('cmT').textContent='NewtonBot — '+ex.title;
+  document.getElementById('cmS').textContent='Semana 3 · MRU';
+  document.getElementById('cmEnunciadoText').textContent=ex.enunciado;
+  document.getElementById('cmHintText').textContent=ex.hint;
+  document.getElementById('chatMsgs').innerHTML='';
+  document.getElementById('chatOv').classList.add('open');
+  document.getElementById('ci').value='';document.getElementById('ci').focus();
+  addMsg('bot','¡Hola! Ya podés leer el enunciado arriba. ¿Con qué dato vas a arrancar?');
+}
+function closeChat(){document.getElementById('chatOv').classList.remove('open');chatOpen=false;}
+function closeIfOut(e){if(e.target===document.getElementById('chatOv'))closeChat();}
+function addMsg(role,text){
+  const m=document.getElementById('chatMsgs');
+  const d=document.createElement('div');d.className='msg '+role;
+  d.innerHTML=`<div class="mv ${role==='bot'?'bot':'uv'}">${role==='bot'?'🤖':'👤'}</div><div class="mb">${text}</div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+  chatMsgs.push({role:role==='bot'?'assistant':'user',content:text});
+}
+function showTyping(){
+  const m=document.getElementById('chatMsgs');
+  const d=document.createElement('div');d.className='td-wrap';d.id='typing';
+  d.innerHTML=`<div class="mv bot">🤖</div><div class="td-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+async function sendMsg(){
+  const ci=document.getElementById('ci');
+  const txt=ci.value.trim();if(!txt)return;
+  ci.value='';ar(ci);
+  addMsg('user',txt);
+  document.getElementById('cs').disabled=true;
+  showTyping();
+  try{
+    const r=await fetch('/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:chatMsgs,exerciseContext:chatCtx})
+    });
+    const d=await r.json();
+    hideTyping();
+    const botText=d.content?.[0]?.text||'No pude responder. Intentá de nuevo.';
+    addMsg('bot',botText);
+  }catch(e){hideTyping();addMsg('bot','Hubo un error de conexión. ¿Podés intentar de nuevo?');}
+  document.getElementById('cs').disabled=false;
+  document.getElementById('ci').focus();
+}
+function ck(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,96)+'px';}
+
+// ===== GAME =====
+const QUESTIONS=[
+  {cat:'Concepto MRU',q:'¿Qué valor tiene la aceleración en el MRU?',opts:['a = 0','a > 0','a = v / t','a = constante'],a:0},
+  {cat:'Concepto MRU',q:'¿Cuál es la trayectoria en el MRU?',opts:['Curva','Circular','Rectilínea','Parabólica'],a:2},
+  {cat:'Concepto MRU',q:'¿Qué se mantiene constante en el MRU?',opts:['La aceleración','La posición','La velocidad','La fuerza'],a:2},
+  {cat:'Ecuación horaria',q:'Un objeto parte desde x₀ = 5 m con v = 4 m/s. ¿Cuál es su posición a los 3 s?',opts:['12 m','17 m','7 m','20 m'],a:1},
+  {cat:'Ecuación horaria',q:'x = 0 + 6·t. ¿Cuánto vale x a t = 5 s?',opts:['11 m','1 m','30 m','36 m'],a:2},
+  {cat:'Velocidad',q:'Un auto recorre 120 m en 8 s a velocidad constante. ¿Cuál es v?',opts:['15 m/s','960 m/s','12 m/s','10 m/s'],a:0},
+  {cat:'Despeje',q:'v = 20 m/s, Δx = 100 m. ¿Cuánto tiempo tarda?',opts:['5 s','2000 s','0,2 s','10 s'],a:0},
+  {cat:'Distancia',q:'Un tren viaja a 25 m/s durante 4 s. ¿Qué distancia recorre?',opts:['6,25 m','100 m','29 m','200 m'],a:1},
+  {cat:'Gráfico x-t',q:'En el gráfico x-t del MRU, la pendiente de la recta representa:',opts:['La aceleración','El desplazamiento','La velocidad','El tiempo'],a:2},
+  {cat:'Gráfico v-t',q:'En el MRU, ¿cómo se ve el gráfico v-t?',opts:['Recta inclinada','Parábola','Recta horizontal','Curva decreciente'],a:2},
+  {cat:'Gráfico x-t',q:'Un gráfico x-t tiene recta horizontal. Eso significa que el objeto:',opts:['Se mueve rápido','Está en reposo','Acelera','Desacelera'],a:1},
+  {cat:'Desplazamiento',q:'Un objeto va de x = 10 m a x = 70 m. ¿Cuánto es el desplazamiento Δx?',opts:['80 m','60 m','−60 m','700 m'],a:1},
+  {cat:'Encuentro',q:'Tren A parte de x=0 a 8 m/s. Tren B de x=200m a 12 m/s hacia la izquierda. ¿En qué tiempo se encuentran?',opts:['10 s','20 s','8 s','25 s'],a:0},
+  {cat:'Concepto',q:'¿Cuál es la diferencia entre distancia y desplazamiento?',opts:['Son lo mismo','Distancia es camino recorrido, desplazamiento puede ser negativo','Desplazamiento es siempre mayor','Solo la distancia tiene unidades'],a:1},
+  {cat:'Notación científica + MRU',q:'Un tren va a 25 m/s durante 8 horas. ¿Cuántos metros recorre? (8h = 28800 s)',opts:['7,2 × 10⁴ m','7,2 × 10⁵ m','7,2 × 10³ m','2,88 × 10⁶ m'],a:1},
+];
+
+const TL=30;
+let gQ=[],gI=0,gScore=0,gStreak=0,gAnswered=false,gTimer=null,tLeft=TL;
+
+function startGame(){
+  gQ=shuffle([...QUESTIONS]).slice(0,12);gI=0;gScore=0;gStreak=0;
+  document.getElementById('gStart').style.display='none';
+  document.getElementById('gEnd').style.display='none';
+  document.getElementById('gScreen').style.display='block';
+  showQ();
+}
+function showQ(){
+  if(gI>=gQ.length){endGame();return;}
+  gAnswered=false;
+  const q=gQ[gI];
+  document.getElementById('qc').className='qcard';
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('qn').textContent=`${gI+1}/${gQ.length}`;
+  document.getElementById('sv').textContent=gScore;
+  document.getElementById('stk').textContent=gStreak;
+  document.getElementById('fb').className='fb';
+  document.getElementById('qopts').innerHTML=q.opts.map((o,i)=>`<button class="qopt" onclick="ansQ(${i})">${o}</button>`).join('');
+  startTimer();
+}
+function ansQ(idx){
+  if(gAnswered)return;gAnswered=true;clearInterval(gTimer);
+  const q=gQ[gI];
+  document.querySelectorAll('.qopt').forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb');
+  if(idx===q.a){
+    document.querySelectorAll('.qopt')[idx].classList.add('correct');
+    document.getElementById('qc').classList.add('correct');
+    gStreak++;const bonus=gStreak>=3?20:10;
+    gScore+=bonus+Math.ceil(tLeft*1.5);
+    fb.className='fb correct show';
+    fb.textContent=gStreak>=3?`✓ ¡Correcto! +${bonus+Math.ceil(tLeft*1.5)} pts 🔥 Racha x${gStreak}`:`✓ ¡Correcto! +${bonus+Math.ceil(tLeft*1.5)} pts`;
+  }else{
+    document.querySelectorAll('.qopt')[idx].classList.add('wrong');
+    document.querySelectorAll('.qopt')[q.a].classList.add('correct');
+    document.getElementById('qc').classList.add('wrong');gStreak=0;
+    fb.className='fb wrong show';fb.textContent=`✗ La correcta era: ${q.opts[q.a]}`;
+  }
+  setTimeout(()=>{gI++;showQ();},1800);
+}
+function startTimer(){
+  tLeft=TL;updTimer();clearInterval(gTimer);
+  gTimer=setInterval(()=>{
+    tLeft--;updTimer();
+    if(tLeft<=0){
+      clearInterval(gTimer);
+      if(!gAnswered){
+        gAnswered=true;gStreak=0;
+        const q=gQ[gI];
+        document.querySelectorAll('.qopt').forEach((o,i)=>{o.disabled=true;if(i===q.a)o.classList.add('correct');});
+        const fb=document.getElementById('fb');
+        fb.className='fb wrong show';fb.textContent=`⏰ Tiempo. La correcta era: ${q.opts[q.a]}`;
+        setTimeout(()=>{gI++;showQ();},1800);
+      }
+    }
+  },1000);
+}
+function updTimer(){
+  const p=tLeft/TL;
+  document.getElementById('trc').style.strokeDashoffset=220*(1-p);
+  document.getElementById('trc').style.stroke=tLeft<=8?'#c084fc':tLeft<=15?'#e8c547':'#4f8ef7';
+  document.getElementById('trt').textContent=tLeft;
+}
+function endGame(){
+  clearInterval(gTimer);
+  document.getElementById('gScreen').style.display='none';
+  document.getElementById('gEnd').style.display='block';
+  document.getElementById('fsc').textContent=gScore+' pts';
+  const tot=gQ.length;
+  let stars,msg;
+  if(gScore>=tot*30){stars='⭐⭐⭐';msg='¡Excelente! Dominás el MRU.';}
+  else if(gScore>=tot*15){stars='⭐⭐';msg='¡Muy bien! Repasá los ejercicios más difíciles.';}
+  else{stars='⭐';msg='Buen intento. Te recomendamos repasar la teoría y el simulador.';}
+  document.getElementById('strs').textContent=stars;
+  document.getElementById('emsg').textContent=msg;
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').textContent='Guardar en ranking 🏆';
+}
+function restartGame(){
+  document.getElementById('gEnd').style.display='none';
+  document.getElementById('gStart').style.display='block';
+  loadRanking();
+}
+async function loadRanking(){
+  try{
+    const r=await fetch('/api/ranking?semana=semana3&juego=trivia');
+    const d=await r.json();
+    const list=document.getElementById('rl');
+    if(!d||!d.length){list.innerHTML='<div style="color:var(--ink3);font-size:0.82rem;text-align:center;padding:12px;">¡Sé el primero en el ranking!</div>';return;}
+    list.innerHTML=d.slice(0,10).map((r,i)=>`
+      <div class="ri ${i===0?'t1':i===1?'t2':i===2?'t3':''}">
+        <div class="rpos">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="rname">${r.nombre}</div>
+        <div class="rscore">${r.score} pts</div>
+        <div class="rdate">${new Date(r.fecha).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'})}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('rl').innerHTML='<div style="color:var(--ink3);font-size:0.82rem;text-align:center;padding:12px;">Ranking no disponible.</div>';}
+}
+async function saveScore(){
+  const nombre=document.getElementById('pname').value.trim();
+  if(!nombre){document.getElementById('pname').style.borderColor='var(--accent4)';return;}
+  const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='Guardando…';
+  try{
+    await fetch('/api/ranking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,score:gScore,semana:'semana3',juego:'trivia'})});
+    btn.textContent='✓ ¡Guardado!';
+  }catch(e){btn.textContent='Error';btn.disabled=false;}
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// init
+loadRanking();
+setTimeout(()=>{drawTrenChart();updateSim();},200);
+window.addEventListener('resize',()=>{if(document.getElementById('section-teoria').classList.contains('active'))drawTrenChart();});
+</script>
+</body>
+</html>
